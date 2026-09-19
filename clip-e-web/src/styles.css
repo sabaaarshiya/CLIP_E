@@ -401,3 +401,13 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 .styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:67.5% !important}
 .styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:100% !important}
 .hairSlot>b{height:34px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:7px 5px!important;background:#0a2639!important}
+
+/* Mask all infographic chrome: show only the portrait center from each source cell */
+.hairSlot{background:#0b2a3e!important}
+.hairCrop{position:relative!important;height:142px!important;flex-basis:142px!important;background-size:1035% 460%!important;border-radius:7px 7px 0 0!important}
+.hairCrop:before{content:"";position:absolute;inset:0;background:linear-gradient(#0b2a3e 0 13%,transparent 13% 82%,#0b2a3e 82% 100%);pointer-events:none}
+.hairCrop:after{content:"";position:absolute;inset:0;box-shadow:inset 10px 0 #0b2a3e,inset -10px 0 #0b2a3e;pointer-events:none}
+.styleGender:has(button:first-child.active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:0%!important}
+.styleGender:has(button:first-child.active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:33.333%!important}
+.styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:66.666%!important}
+.styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:100%!important}
