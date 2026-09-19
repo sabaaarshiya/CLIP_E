@@ -175,3 +175,32 @@ nav button.active,.eyebrow,.hero h2 em,.readout b,.why b,.styleCard>b,.match,.pr
 .tags span,.future span{background:#194057;border-color:#39718a;color:#bdd1da}
 .privacy,.safe{background:#163f42;border-color:#2d6b68;color:#7fd4c3}
 .status i{background:#44d9b0}
+
+/* Unified head silhouette language for all scan + mapping visualizations */
+.scanner:before,.mesh,.silhouette,.minihead,.mapHead,.wirehead{
+  border-radius:48% 48% 44% 44% / 38% 38% 58% 58%;
+  clip-path:polygon(28% 2%,72% 2%,88% 12%,96% 31%,92% 54%,82% 72%,68% 88%,59% 97%,41% 97%,32% 88%,18% 72%,8% 54%,4% 31%,12% 12%);
+}
+.scanner:before{
+  width:250px;height:350px;
+  border:2px solid #6da6be;
+  background:linear-gradient(180deg,#2387a80d,#ff7a3208);
+  box-shadow:inset 0 0 45px #2387a812;
+}
+.mesh,.silhouette,.minihead,.wirehead{
+  position:relative;
+  overflow:hidden;
+}
+.mesh:before,.silhouette:before,.minihead:before,.wirehead:before,.mapHead:before{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,transparent 49.5%,#68b3cb35 50%,transparent 50.5%),
+    linear-gradient(0deg,transparent 49.5%,#68b3cb25 50%,transparent 50.5%);
+  pointer-events:none;
+}
+.mesh:after,.silhouette:after,.wirehead:after,.mapHead:after{
+  content:"";position:absolute;left:17%;right:17%;top:23%;height:34%;
+  border:1px solid #6eb4cb66;border-left:0;border-right:0;border-radius:50%;
+  pointer-events:none;
+}
+.mapHead{border:1px solid #63a5be}
