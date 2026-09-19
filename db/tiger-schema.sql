@@ -105,3 +105,16 @@ create table if not exists robot_events (
   message text,
   payload jsonb not null default '{}'::jsonb
 );
+
+
+-- WebRTC signaling state for the phone rear camera.
+-- Media itself remains peer-to-peer; this table only carries SDP offer/answer blobs.
+create table if not exists camera_signaling (
+  session_key text primary key,
+  offer jsonb,
+  answer jsonb,
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists camera_signaling_updated_idx
+  on camera_signaling(updated_at desc);
