@@ -856,3 +856,19 @@ main{animation:uiPageIn var(--ui-slow) var(--ui-ease)}
 .recommendedFooter{display:flex;align-items:center;gap:18px;margin-top:16px;padding:14px 16px;border:1px solid #31586d;background:#082234;border-radius:12px}
 .recommendedFooter>div{display:grid;gap:3px;flex:1}.recommendedFooter small{color:#8fb1c1}
 @media(max-width:900px){.recommendedCards{grid-template-columns:1fr}.recommendationLineupTop{align-items:flex-start;flex-direction:column}.recommendationLineupTop .styleGender{min-width:0;width:100%}.recommendedFooter{align-items:flex-start;flex-wrap:wrap}}
+
+/* Blind-spot narrative refinement */
+.navCheck{margin-left:4px;font-size:7px;color:#69d7bd}
+.blindSpotHero{align-items:stretch}
+.blindSpotVisual{min-height:520px;background:#0a2639;border:1px solid #315e77;border-radius:14px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.backHeadViz{position:relative;width:min(460px,88%);height:470px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 46%,#174f6b 0,#0b273a 58%,#071c2b 100%);border-radius:12px;overflow:hidden}
+.backHeadViz .conceptHead{width:280px;height:380px}
+.visionReticle{position:absolute;border:1px solid #57ccea77;border-radius:50%;pointer-events:none}.vr1{width:78%;height:68%}.vr2{width:58%;height:48%;border-color:#ff7a3288}
+.blindLabel{position:absolute;top:50%;font-size:9px;letter-spacing:.18em;color:#70cbe9}.blindLabel.left{left:20px}.blindLabel.right{right:20px}
+.targetRegionLabel{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);padding:7px 10px;border:1px solid #ff7a32;background:#24150ed9;color:#ff9a61;font-size:8px;letter-spacing:.11em;white-space:nowrap}
+.visionReadout{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:1fr auto 1fr auto;gap:8px;align-items:center;background:#071a27dd;border:1px solid #31586d;padding:9px 10px;border-radius:8px}.visionReadout span{font-size:7px;letter-spacing:.1em;color:#779fb3}.visionReadout b{font-size:8px;color:#d9edf5}
+.fourStage{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.blindPipeline{max-width:1180px;margin:16px auto 0;padding:14px 18px;border:1px solid #31586d;background:#082234;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}.blindPipeline span{font-size:9px;letter-spacing:.12em;color:#d7edf4}.blindPipeline svg{color:#ff7a32}
+.whyClipE{max-width:1180px;margin:18px auto 0;padding:24px;border:1px solid #31586d;background:#0b2a3d;border-radius:14px;display:grid;grid-template-columns:1.2fr .8fr;gap:28px}.whyClipE h2{font-size:28px;margin:6px 0 8px}.whyClipE p{color:#91b1c1;line-height:1.6}.useCases{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start}.useCases span{padding:10px 12px;border:1px solid #31586d;border-radius:8px;background:#081f30;color:#cfe3ec;font-size:9px}
+@media(max-width:1000px){.fourStage{grid-template-columns:repeat(2,1fr)!important}.whyClipE{grid-template-columns:1fr}.blindSpotHero{grid-template-columns:1fr}.blindSpotVisual{min-height:420px}}
+@media(max-width:650px){.fourStage{grid-template-columns:1fr!important}.visionReadout{grid-template-columns:1fr auto}.useCases{grid-template-columns:1fr}}
