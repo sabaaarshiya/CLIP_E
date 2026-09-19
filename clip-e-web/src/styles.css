@@ -411,3 +411,21 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 .styleGender:has(button:first-child.active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:33.333%!important}
 .styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:66.666%!important}
 .styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:100%!important}
+
+/* Precise source-coordinate crop: isolate only the portrait rectangle from the 1536x1024 sheet */
+.hairCrop{height:auto!important;aspect-ratio:160/180!important;flex:0 0 auto!important;width:100%!important;background-image:url('../PNG.png')!important;background-size:960% 568.89%!important;background-repeat:no-repeat!important;transform:none!important;clip-path:none!important;margin:0!important}
+.hairCrop:before,.hairCrop:after{display:none!important}
+.hairSlot:nth-child(9n+1) .hairCrop{background-position-x:1.09%!important}
+.hairSlot:nth-child(9n+2) .hairCrop{background-position-x:13.23%!important}
+.hairSlot:nth-child(9n+3) .hairCrop{background-position-x:25.36%!important}
+.hairSlot:nth-child(9n+4) .hairCrop{background-position-x:37.50%!important}
+.hairSlot:nth-child(9n+5) .hairCrop{background-position-x:49.64%!important}
+.hairSlot:nth-child(9n+6) .hairCrop{background-position-x:61.77%!important}
+.hairSlot:nth-child(9n+7) .hairCrop{background-position-x:73.91%!important}
+.hairSlot:nth-child(9n+8) .hairCrop{background-position-x:86.05%!important}
+.hairSlot:nth-child(9n) .hairCrop{background-position-x:98.18%!important}
+.styleGender:has(button:first-child.active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:6.40%!important}
+.styleGender:has(button:first-child.active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:32.94%!important}
+.styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:65.40%!important}
+.styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:91.35%!important}
+.hairSlot{height:auto!important}
