@@ -52,11 +52,28 @@ export default async function handler(req,res){
     ];
 
     const ai=new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY});
-    const interaction=await ai.interactions.create({
-      model:MODEL,
-      input,
-      response_format:{type:'image',mime_type:'image/jpeg'}
-    });
+    let interaction;
+    let fallback=null;
+    try{
+      interaction=await ai.interactions.create({
+        model:MODEL,
+        input,
+        response_format:{type:'image',mime_type:'image/jpeg'}
+      });
+    }catch(firstError){
+      const msg=String(firstError?.message||'');
+      if(reference&&/decod|image|invalid/i.test(msg)){
+        fallback='text-only-style-reference';
+        interaction=await ai.interactions.create({
+          model:MODEL,
+          input:[
+            {type:'image',mime_type:source.mime,data:source.data},
+            {type:'text',text:prompt+' The visual reference could not be used, so reproduce the named hairstyle from the written description while preserving the source person exactly.'}
+          ],
+          response_format:{type:'image',mime_type:'image/jpeg'}
+        });
+      }else throw firstError;
+    }
 
     const image=findOutputImage(interaction);
     if(!image?.data){
@@ -66,10 +83,10 @@ export default async function handler(req,res){
 
     return res.status(200).json({
       image:`data:${image.mime_type||'image/jpeg'};base64,${image.data}`,
-      meta:{model:MODEL,sourceBytes:source.bytes,referenceBytes:reference?.bytes||0,durationMs:Date.now()-started}
+      meta:{model:MODEL,sourceBytes:source.bytes,referenceBytes:reference?.bytes||0,durationMs:Date.now()-started,fallback}
     });
   }catch(e){
-    const status=Number(e?.status)||Number(e?.code)===429?429:500;
+    const status=Number(e?.status)===429||Number(e?.code)===429?429:500;
     const message=e?.message||'Preview failed';
     console.error('Clip-E hairstyle preview failed',{
       message,
