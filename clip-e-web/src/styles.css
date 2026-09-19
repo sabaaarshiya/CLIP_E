@@ -1074,7 +1074,7 @@ main{
 .stylePreviewPanel .hairCrop,
 .cutDash .styleSummary .hairCrop{
   background-image:var(--board-image)!important;
-  background-size:500% 1000%!important;
+  background-size:1000% 500%!important;
   background-position:var(--x) var(--y)!important;
   background-repeat:no-repeat!important;
   transform:none!important;
