@@ -495,3 +495,38 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 
 /* Robot camera is the main Live Cut view */
 .liveHeroCamera{position:relative;overflow:hidden;background:#061924}.sessionCamStream{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:8}.sessionCamOverlay{position:absolute;z-index:10;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;pointer-events:none}.sessionCamOverlay span,.sessionCamOverlay b{background:#061b28d9;border:1px solid #315d73;border-radius:4px;padding:6px 9px;font-size:8px;letter-spacing:.12em}.sessionCamOverlay span{color:#fff}.sessionCamOverlay b{color:#65e0c2}.connectCamInline{position:absolute;z-index:7;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:7px;padding:10px 14px;background:#0b2c40;border:1px solid #3b667b;border-radius:6px;color:#fff}
+
+
+/* 2026 Clip-E visual identity — derived from the physical prototype */
+:root{--clip-ink:#061018;--clip-navy:#0b2233;--clip-blue:#163f5b;--clip-blue2:#245f7d;--clip-orange:#ff6433;--clip-orange2:#ff8252;--clip-white:#f5f3ee;--clip-muted:#a7b8c2}
+body{background:radial-gradient(circle at 68% 12%,#173f59 0,#0c293c 31%,#071a28 62%,#050e15 100%)!important;color:var(--clip-white)}
+.app{background:linear-gradient(180deg,#07131c33,#07131ccc)}
+h1,h2,h3,.shapeCallout strong,.sessionSafety strong{color:var(--clip-white);letter-spacing:-.035em;font-weight:800}
+p{color:#b5c4cc;line-height:1.6}
+.primary{background:var(--clip-orange)!important;color:#fff!important;border-color:var(--clip-orange)!important;box-shadow:0 10px 32px #ff643326}
+.primary:hover{background:var(--clip-orange2)!important;transform:translateY(-1px)}
+.pill{background:#ff64330d!important;border:1px solid #ff64335c!important;color:#ff9b79!important}
+.discoverHero{min-height:560px;align-items:stretch;gap:44px;padding-top:22px}
+.discoverCopy{display:flex;flex-direction:column;justify-content:center}
+.discoverCopy h2{font-size:clamp(48px,5.6vw,78px)!important;line-height:.91!important;margin:24px 0 22px;max-width:760px}
+.discoverCopy h2 em{font-style:normal;color:var(--clip-orange)}
+.discoverCopy>p{font-size:15px!important;max-width:610px;color:#c2cdd3!important}
+.discoverCopy .primary.big{margin-top:20px;padding:15px 20px;font-size:13px}
+.discoverCopy .features{margin-top:22px}
+.discoverCopy .features span{color:#b9c7cf!important;font-weight:650}
+.discoverCopy .features svg{color:var(--clip-orange)}
+.discoverRobot{position:relative;background:linear-gradient(145deg,#0e3046,#081a27)!important;border:1px solid #31566b!important;border-radius:3px!important;box-shadow:0 35px 80px #0008;overflow:hidden}
+.discoverRobot:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.7%,#ffffff08 50%,transparent 50.3%),linear-gradient(0deg,transparent 49.7%,#ffffff08 50%,transparent 50.3%);background-size:48px 48px;pointer-events:none}
+.discoverRobot .techLabel{color:#ff8b63!important;letter-spacing:.16em}
+.discoverRobot .readout{background:#07131cd9!important;border-top:1px solid #31566b}
+.discoverRobot .readout b{color:#fff}
+.robotSpec{position:absolute;left:18px;right:18px;bottom:76px;display:flex;gap:12px;padding:13px;background:#07131ce8;border-left:2px solid var(--clip-orange);backdrop-filter:blur(8px)}
+.robotSpec>span{font-size:10px;color:var(--clip-orange);font-weight:800}
+.robotSpec p{font-size:10px!important;margin:0!important;color:#aebec7!important;line-height:1.4!important}
+.robotSpec b{color:#fff}
+.discoverWhy{margin-top:46px!important;border-top:1px solid #31566b!important}
+.discoverWhy article{background:linear-gradient(180deg,#0b2637aa,#07192388)!important;border-color:#28495b!important;border-radius:2px!important;padding:28px!important}
+.discoverWhy article>b{color:var(--clip-orange)!important;letter-spacing:.16em;font-size:9px}
+.discoverWhy h3{font-size:25px!important;margin:16px 0 10px}
+.discoverWhy p{font-size:12px!important;color:#9eb1bb!important}
+@media(max-width:850px){.discoverHero{gap:24px}.discoverCopy h2{font-size:48px!important}.robotSpec{position:relative;left:auto;right:auto;bottom:auto;margin:12px}}
