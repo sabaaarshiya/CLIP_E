@@ -429,3 +429,17 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 .styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:65.40%!important}
 .styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:91.35%!important}
 .hairSlot{height:auto!important}
+
+/* Exact source cells for retained women's styles; removed updo cells 29-34 are never rendered */
+.hairCrop.source-18{background-position:1.09% 65.40%!important}
+.hairCrop.source-19{background-position:13.23% 65.40%!important}
+.hairCrop.source-20{background-position:25.36% 65.40%!important}
+.hairCrop.source-21{background-position:37.50% 65.40%!important}
+.hairCrop.source-22{background-position:49.64% 65.40%!important}
+.hairCrop.source-23{background-position:61.77% 65.40%!important}
+.hairCrop.source-24{background-position:73.91% 65.40%!important}
+.hairCrop.source-25{background-position:86.05% 65.40%!important}
+.hairCrop.source-26{background-position:98.18% 65.40%!important}
+.hairCrop.source-27{background-position:1.09% 91.35%!important}
+.hairCrop.source-28{background-position:13.23% 91.35%!important}
+.hairCrop.source-35{background-position:98.18% 91.35%!important}
