@@ -29,7 +29,7 @@ export default function PhoneCamera(){
       streamRef.current=s;
       if(videoRef.current){videoRef.current.srcObject=s;await videoRef.current.play();}
       await getToken();
-      setRunning(true);setStatus('Connected · uploading back view');
+      setRunning(true);setStatus('Connected · dedicated rear-head view');
     }catch(e){setStatus(e.message||'Camera permission failed');setRunning(false)}
   }
 
@@ -76,12 +76,12 @@ export default function PhoneCamera(){
   useEffect(()=>()=>stop(),[]);
 
   return <div className="phoneCamPage">
-    <header className="phoneCamHeader"><div><b>CLIP-E</b><span>BACK-OF-HEAD CAMERA</span></div><span className={running?'phoneLive':'phoneIdle'}>{running?<Wifi size={15}/>:<WifiOff size={15}/>} {running?'LIVE':'OFFLINE'}</span></header>
+    <header className="phoneCamHeader"><div><b>CLIP-E</b><span>DEDICATED BACK-OF-HEAD CAMERA</span></div><span className={running?'phoneLive':'phoneIdle'}>{running?<Wifi size={15}/>:<WifiOff size={15}/>} {running?'LIVE':'OFFLINE'}</span></header>
     <main className="phoneCamMain">
       <section className="phoneCamStage">
         <video ref={videoRef} autoPlay playsInline muted/>
         <canvas ref={canvasRef} hidden/>
-        <div className="backGuide"><div className="headGuide"/><b>Center the back of the head</b><span>Keep the full hairline and both ears visible</span></div>
+        <div className="backGuide"><div className="headGuide"/><b>Center the BACK of the head</b><span>Keep the nape, rear hairline, and both ears visible</span></div>
       </section>
       <section className="phoneCamControls">
         <div><span>SESSION</span><b>{session}</b></div>
@@ -89,7 +89,7 @@ export default function PhoneCamera(){
         <input type="range" min="1" max="5" value={fps} onChange={e=>setFps(Number(e.target.value))}/>
         <p>{status}</p>
         {!running?<button className="primary big" onClick={start}><Camera size={18}/> Start rear camera</button>:<button className="ghost big" onClick={stop}><RefreshCw size={18}/> Stop camera</button>}
-        <small>Keep this page open and the phone pointed at the back of the head. Clip-E receives low-bandwidth JPEG snapshots through the secure Vercel camera API.</small>
+        <small>Keep this page open with the phone positioned behind the person. The rear phone camera is reserved for the back of the head, nape, rear hairline, and rear sides. Clip-E continues receiving JPEG snapshots through the existing secure camera API.</small>
       </section>
     </main>
   </div>
