@@ -464,3 +464,10 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 /* Literally just a circle */
 .simpleScanCircle{width:190px;height:190px;border:2px solid #55cfee;border-radius:50%;background:transparent;box-shadow:none}
 .scanWelcome>svg{display:none!important}
+
+/* Final scan placeholder cleanup: one circle, nothing layered */
+.cameraScanner:not(:has(video)):not(:has(>img)) .faceGuide{display:none!important}
+.scanWelcome{position:absolute!important;inset:0!important;min-height:0!important;background:#081f2e!important}
+.simpleScanCircle{width:220px!important;height:220px!important;border:2px solid #55cfee!important;border-radius:50%!important}
+.cameraScanner:not(:has(video)):not(:has(>img)) .poseGuide{display:none!important}
+.cameraScanner:not(:has(video)):not(:has(>img))>small{display:none!important}
