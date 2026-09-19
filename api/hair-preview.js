@@ -10,7 +10,7 @@ export default async function handler(req,res){
    {type:'image',mime_type:base.mime,data:base.data}
   ];
   if(ref)input.push({type:'image',mime_type:ref.mime,data:ref.data});
-  const g=await fetch('https://generativelanguage.googleapis.com/v1beta/interactions',{method:'POST',headers:{'x-goog-api-key':process.env.GEMINI_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model:MODEL,input,response_format:{type:'image',mime_type:'image/jpeg'}})});
+  const g=await fetch('https://generativelanguage.googleapis.com/v1beta/interactions',{method:'POST',headers:{'x-goog-api-key':process.env.GEMINI_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({model:MODEL,input})});
   const out=await g.json();if(!g.ok)throw new Error(out?.error?.message||'Gemini request failed');
   let img=out.output_image;
   if(!img)for(const step of out.steps||[])for(const block of step.content||[])if(block.type==='image'&&!block.thought)img=block;
