@@ -1,5 +1,37 @@
-import { createClient } from '@supabase/supabase-js';
-const supa=()=>createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false}});
-export default async function handler(req,res){
- if(req.method!=='GET')return res.status(405).end();const device=String(req.query.device||'camera-01').replace(/[^a-zA-Z0-9_-]/g,'');try{const db=supa();const st=await db.from('camera_status').select('latest_path,latest_frame_at,frame_seq').eq('device_id',device).maybeSingle();if(st.error)throw st.error;if(!st.data?.latest_path)return res.status(404).json({error:'No camera frame yet'});const dl=await db.storage.from('camera-frames').download(st.data.latest_path);if(dl.error)throw dl.error;const buf=Buffer.from(await dl.data.arrayBuffer());res.setHeader('Content-Type','image/jpeg');res.setHeader('Cache-Control','no-store, max-age=0');res.setHeader('X-Camera-Frame-Seq',String(st.data.frame_seq||0));res.setHeader('X-Camera-Frame-At',st.data.latest_frame_at||'');return res.status(200).send(buf)}catch(e){return res.status(500).json({error:e.message||'Camera unavailable'})}
+import { cleanDeviceId, getDb } from '../../lib/db.js';
+
+export default async function handler(req, res) {
+  if (req.method !== 'GET') {
+    return res.status(405).end();
+  }
+
+  try {
+    const device = cleanDeviceId(req.query.device, 'camera-01');
+    const db = getDb();
+
+    const q = await db.query(
+      `select image_url, frame_seq, time
+       from camera_telemetry
+       where device_id = $1 and image_url is not null
+       order by time desc
+       limit 1`,
+      [device]
+    );
+
+    if (!q.rowCount) {
+      return res.status(404).json({ error: 'No camera frame yet' });
+    }
+
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+    return res.status(200).json({
+      ok: true,
+      device_id: device,
+      frame_seq: Number(q.rows[0].frame_seq || 0),
+      latest_frame_at: q.rows[0].time,
+      image_url: q.rows[0].image_url,
+    });
+  } catch (e) {
+    console.error('camera latest failed', e);
+    return res.status(500).json({ error: e?.message || 'Camera unavailable' });
+  }
 }
