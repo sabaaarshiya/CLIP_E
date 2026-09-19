@@ -161,7 +161,7 @@ async function generatePreview(nextStyle=style,force=false){const item=unifiedSt
 
 {styleTransition&&<div className="styleTransitionOverlay"><Sparkles/><b>{styleTransition}</b><span>{styleTransition==='STYLE SELECTED'?'Target locked.':styleTransition==='ANALYZING REQUIRED CHANGES'?'Comparing your visible hair profile to the selected target.':'Translating differences into the Review cut map.'}</span></div>}
 </div></Shell>}
-{step===5&&<Shell {...{step,setStep}} prevStep={3} nextStep={10} hidePager kicker="05 / CLIP-E" title="One workspace. Four phases." desc="Clip-E keeps the selected style, scan, cameras, voice, safety state, and robotic context in one continuous workspace: PLAN → CALIBRATE → ASSIST → VERIFY."><div className="clipEWorkspace">
+{step===5&&<Shell {...{step,setStep}} prevStep={3} nextStep={10} hidePager kicker="05 / CLIP-E" title="One workspace. Four phases." desc="Clip-E keeps the selected style, scan, cameras, voice, safety state, and robotic context in one continuous workspace."><div className="clipEWorkspace">
 <div className="clipEPhaseNav">{[['plan','PLAN'],['calibrate','CALIBRATE'],['assist','ASSIST'],['verify','VERIFY']].map(([id,label],i)=><button key={id} className={(clipEPhase===id?'active ':'')+((id==='calibrate'&&planApproved)||(id==='assist'&&planApproved&&setupChecks.workspace&&setupChecks.seated&&setupChecks.stop)||(id==='verify'&&finalPhoto)?'complete':'')} onClick={()=>setClipEPhase(id)}><span>{String(i+1).padStart(2,'0')}</span><b>{label}</b></button>)}</div>
 
 <div className="clipEPhaseBody">
