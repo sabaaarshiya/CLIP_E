@@ -1047,3 +1047,5 @@ main{
 .cardHoverMeta{position:absolute;inset:0;z-index:4;background:#061a29f2;padding:13px;display:flex;flex-direction:column;gap:6px;opacity:0;pointer-events:none;transition:opacity .2s ease}.libraryCard:hover .cardHoverMeta{opacity:1}.cardHoverMeta>b{font-size:13px}.cardHoverMeta>span{font-size:8px;color:#9ab9c8;line-height:1.35}.cardHoverMeta p{margin-top:auto;margin-bottom:0;font-size:8px;line-height:1.4;color:#c5d9e2}.cardHoverMeta strong{display:block;color:#ff9a61;font-size:7px;letter-spacing:.08em;margin-bottom:3px}
 .stylePreviewPanel{position:fixed!important;top:88px;right:18px;bottom:18px;width:min(760px,calc(100vw - 220px));max-height:none!important;overflow:auto;z-index:65;box-shadow:0 30px 100px #000b;background:#0b2a3df8!important;backdrop-filter:blur(18px)}
 @media(max-width:1100px){.stylePreviewPanel{left:12px;right:12px;width:auto;top:126px}.cardHoverMeta{display:none}}
+
+.recommendationsPending{display:flex;align-items:center;gap:10px;padding:14px;border:1px dashed #31586d;border-radius:10px;background:#081f30;color:#8faebc;font-size:9px}.recommendationsPending svg{color:#57ccea}
