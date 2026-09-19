@@ -344,3 +344,11 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 
 /* Fix uploaded sheet path/layout: PNG.png lives one level above Vite public root */
 .sheetCrop{background-image:url('../PNG.png')!important;background-size:600% 600%!important;background-repeat:no-repeat!important;background-position:calc(var(--col) * 20%) calc(var(--row) * 20%)!important;min-height:112px;background-color:#1d2329!important}.styleGallery{max-height:650px!important;overflow-y:auto!important}.imageStyleGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}.styleGender{position:sticky;top:-18px;z-index:10;background:#0d2b40;padding:8px 0}.imageStyle{min-height:145px!important}.imageStyle>b{font-size:8px!important}
+
+/* Correct sprite-sheet cropping: source is 9 columns x 4 rows, men top 2 / women bottom 2 */
+.imageStyleGrid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important}
+.imageStyle{padding:5px!important;min-height:0!important;overflow:hidden!important}
+.sheetCrop{display:block!important;width:100%!important;aspect-ratio:1/1.18!important;background-image:url('../PNG.png')!important;background-repeat:no-repeat!important;background-size:900% 400%!important;background-position-x:calc(var(--col) * 12.5%)!important;border-radius:4px!important}
+.sheetCrop.men{background-position-y:calc(var(--row) * 33.333%)!important}
+.sheetCrop.women{background-position-y:calc((var(--row) + 2) * 33.333%)!important}
+.imageStyle>b{padding:7px 2px 4px!important;font-size:8px!important}
