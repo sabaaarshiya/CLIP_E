@@ -105,7 +105,7 @@ async function extractBoard(boardPath,boardIndex){
 
       await sharp(boardPath,{limitInputPixels:false})
         .extract({left:cropLeft,top:cropTop,width:cropW,height:cropH})
-        .resize({width:CARD_W,height:CARD_H,fit:'contain',position:'north',background:{r:7,g:31,b:48,alpha:1},withoutEnlargement:false})
+        .resize({width:CARD_W,height:CARD_H,fit:'contain',position:'centre',background:{r:7,g:31,b:48,alpha:1},withoutEnlargement:false})
         .webp({quality:92,smartSubsample:true})
         .toFile(out);
 
