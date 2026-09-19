@@ -141,3 +141,37 @@ select{background:var(--brand-abyss);color:var(--brand-palladian);border-color:#
 .arm .path,.motionline,.arc{border-color:var(--brand-orange);border-left-color:transparent;border-bottom-color:transparent}
 .tags span,.future span{background:#263647;border-color:#506072;color:var(--brand-oatmeal)}
 .avatar{border-color:var(--brand-orange);color:var(--brand-orange)}
+
+/* Vibrant Clip-E pass — energetic product UI, still controlled */
+:root{
+ --brand-blue:#174C70;
+ --brand-blue-bright:#2387A8;
+ --brand-orange:#FF7A32;
+ --brand-orange-bright:#FF9A45;
+ --brand-cream:#F3EFE6;
+ --brand-navy:#132A3A;
+ --orange:#FF7A32;
+ --blue:#2387A8;
+}
+body{background:radial-gradient(circle at 72% 12%,#205979 0,#173f5b 26%,#132f45 52%,#102737 100%)}
+header{background:#102b3deb;border-bottom-color:#2b5870}
+.progress{background:#21485e}.progress span{background:linear-gradient(90deg,#ff7130,#ff9a45)}
+.mark{border-color:#ff7a32;color:#ff8b3d;box-shadow:0 0 0 3px #ff7a3212}
+nav button.active,.eyebrow,.hero h2 em,.readout b,.why b,.styleCard>b,.match,.preview span,.robotStage>b,.timeline article>b{color:#ff8a3d}
+.primary{background:#ff7a32;border-color:#ff7a32;color:#fff}.primary:hover{background:#ff914d;box-shadow:0 10px 25px #ff7a3235}
+.features svg{color:#ff8a3d}
+.robotCard,.panel,.scanner,.heatmap,.robotPreview,.robotStage,.styleCard,.preview,.head,.metrics,.triptych>div{background:#17384e;border-color:#326079}
+.robotCard,.robotStage,.scanner{background-color:#16374d;background-image:linear-gradient(#3b6b8245 1px,transparent 1px),linear-gradient(90deg,#3b6b8245 1px,transparent 1px)}
+.pill{background:#194158;border-color:#35677f;color:#b8d0db}
+.scanline{background:#ff7a32;box-shadow:0 0 14px #ff7a3288}
+.scanner:before{border-color:#6da6be}
+.styleCard:hover,.styleCard.selected{border-color:#ff7a32;box-shadow:0 12px 28px #ff7a3222}
+.mesh,.silhouette,.minihead,.wirehead{border-color:#54a0bd;background:radial-gradient(circle at 50% 35%,#287697,#17445f 68%)}
+.mapHead{background:linear-gradient(#237b9c 0 25%,#3e9db6 25% 45%,#df7549 45% 70%,#ff7a32 70%)}
+.z{border-color:#ffb67f}.legend i{background:#2f91ad}.legend i:nth-of-type(2){background:#d65f3e}.legend i:nth-of-type(3){background:#ff7a32}
+.arm .joint{background:#ff7a32;border-color:#185475;box-shadow:0 0 0 3px #ff7a3220}
+.arm .link{border-color:#216688;background:linear-gradient(90deg,#1d6285 0 18%,#f1eee7 18% 82%,#1d6285 82%)}
+.arm .path,.motionline,.arc{border-color:#ff7a32;border-left-color:transparent;border-bottom-color:transparent}
+.tags span,.future span{background:#194057;border-color:#39718a;color:#bdd1da}
+.privacy,.safe{background:#163f42;border-color:#2d6b68;color:#7fd4c3}
+.status i{background:#44d9b0}
