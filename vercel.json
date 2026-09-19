@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd clip-e-web && npm install",
+  "buildCommand": "cd clip-e-web && npm run build",
+  "outputDirectory": "clip-e-web/dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
