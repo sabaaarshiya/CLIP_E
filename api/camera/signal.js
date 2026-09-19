@@ -10,6 +10,12 @@ export default async function handler(req,res){
 
   try{
     const db=getDb();
+    await db.query(`create table if not exists camera_signaling (
+      session_key text primary key,
+      offer jsonb,
+      answer jsonb,
+      updated_at timestamptz not null default now()
+    )`);
 
     if(req.method==='GET'){
       const q=await db.query(
