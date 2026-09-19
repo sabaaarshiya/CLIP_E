@@ -86,7 +86,10 @@ export default async function handler(req,res){
     const usable=(images||[]).filter(Boolean).slice(0,5);
     if(!usable.length)return res.status(400).json({error:'No scan images were provided'});
     const imageParts=[];
-    for(let i=0;i<usable.length;i++)imageParts.push(await normalize(usable[i],`Scan view ${i+1}`));
+    for(let i=0;i<usable.length;i++){
+      const normalized=await normalize(usable[i],`Scan view ${i+1}`);
+      imageParts.push({inlineData:{mimeType:'image/jpeg',data:normalized.data}});
+    }
 
     const prompt=`You are the visual hair-analysis module for Clip-E, a robotic grooming prototype. Analyze ONLY characteristics that are reasonably visible in the supplied scan images. The images may include front, left, right, back, and crown views.
 
@@ -102,14 +105,22 @@ ${JSON.stringify(faceGeometry||{})}
 The result will drive hairstyle recommendations and the cut-map explanation, so make the styleSignals useful but conservative.`;
 
     const ai=new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY});
-    const interaction=await ai.interactions.create({
+    const response=await ai.models.generateContent({
       model:MODEL,
-      input:[{type:'text',text:prompt},...imageParts],
-      response_format:{type:'text',mime_type:'application/json',schema}
+      contents:[...imageParts,{text:prompt}],
+      config:{
+        responseFormat:{
+          text:{
+            mimeType:'application/json',
+            schema
+          }
+        }
+      }
     });
-    const raw=interaction?.output_text;
+    const raw=response?.text;
     if(!raw)throw new Error('Gemini returned no hair analysis');
-    const parsed=JSON.parse(raw);
+    let parsed;
+    try{parsed=JSON.parse(raw)}catch(err){throw new Error('Gemini returned invalid structured hair-analysis JSON')}
     return res.status(200).json({analysis:parsed,model:MODEL});
   }catch(e){
     console.error('Clip-E hair analysis error',e);
