@@ -20,10 +20,6 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized camera' });
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return res.status(500).json({ error: 'BLOB_READ_WRITE_TOKEN is not configured' });
-  }
-
   try {
     const device = cleanDeviceId(req.headers['x-trimsync-device-id'], 'camera-01');
     const seq = Number(req.headers['x-trimsync-frame-seq'] || Date.now());
@@ -34,12 +30,15 @@ export default async function handler(req, res) {
     }
 
     const started = Date.now();
+
+    // On Vercel, @vercel/blob authenticates through the project's connected
+    // Blob store using Vercel-managed credentials/OIDC. No long-lived
+    // BLOB_READ_WRITE_TOKEN is required in application code.
     const blob = await put(`trimsync/${device}/latest.jpg`, jpeg, {
       access: 'public',
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: 'image/jpeg',
-      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
     const uploadMs = Date.now() - started;
