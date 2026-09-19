@@ -46,9 +46,7 @@ export default async function handler(req, res) {
       }),
     });
 
-    const model = String(process.env.GEMINI_CHAT_MODEL || 'gemini-3.6-flash')
-      .trim()
-      .toLowerCase();
+    const model = 'gemini-3.5-flash-lite';
 
     const r = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
