@@ -789,3 +789,50 @@ main{animation:uiPageIn var(--ui-slow) var(--ui-ease)}
 
 .customStudio.noControls{grid-template-columns:minmax(420px,1.15fr) minmax(420px,1fr)}
 @media(max-width:1050px){.customStudio.noControls{grid-template-columns:1fr}}
+
+/* Customize page layout repair */
+.customStudio.noControls{
+  width:100%;
+  max-width:1480px;
+  margin:28px auto 0;
+  grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr);
+  align-items:start;
+}
+.customStudio.noControls .studioModel{
+  min-width:0;
+  min-height:0!important;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr);
+  align-items:start;
+  justify-content:stretch;
+  padding:18px;
+  overflow:hidden;
+}
+.customStudio.noControls .selectedStyleSummary{
+  width:100%;
+  padding:0 0 14px;
+  position:relative;
+  z-index:2;
+}
+.customStudio.noControls .selectedStyleSummary h3{margin:4px 0 5px}
+.customStudio.noControls .selectedStyleSummary p{max-width:620px;margin:0}
+.customStudio.noControls .userPreview>img{
+  width:100%;
+  height:min(58vh,620px);
+  min-height:430px;
+  object-fit:contain;
+  object-position:center;
+  display:block;
+  border-radius:8px;
+  margin:0;
+}
+.customStudio.noControls .styleGallery{
+  min-width:0;
+  width:100%;
+  max-height:calc(100vh - 190px)!important;
+  overflow:auto;
+}
+@media(max-width:1100px){
+  .customStudio.noControls{grid-template-columns:1fr}
+  .customStudio.noControls .styleGallery{max-height:none!important}
+}
