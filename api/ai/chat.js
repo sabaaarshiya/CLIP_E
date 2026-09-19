@@ -62,7 +62,7 @@ export default async function handler(req, res) {
           },
           contents: [{ role: 'user', parts }],
           generationConfig: {
-            maxOutputTokens: 180,
+            maxOutputTokens: 420,
           },
         }),
       }
