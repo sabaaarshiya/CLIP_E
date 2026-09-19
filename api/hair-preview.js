@@ -6,7 +6,7 @@ export default async function handler(req,res){
  try{
   const {baseImage,style,referenceImage,settings={}}=req.body||{};const base=parseDataUrl(baseImage);const ref=referenceImage?parseDataUrl(referenceImage):null;
   const prompt=`Create a virtual hairstyle preview. The FIRST image is the source photo. The SECOND image is the hairstyle reference. Apply the hairstyle from the second image to the subject in the first image while keeping the source photograph consistent. Modify the hair for the hairstyle preview and adapt it naturally to the head position, lighting and perspective. Use the second image only as the hairstyle reference. Selected hairstyle: ${style}. Top length: ${settings.topLength} mm. Side length: ${settings.sideLength} mm. Fade height: ${settings.fadeHeight}. Texture: ${settings.texture}. Finish: ${settings.finish}.`;
-  const parts=[{text:prompt},{inline_data:{mime_type:base.mime,data:base.data}}];if(ref)parts.push({inline_data:{mime_type:ref.mime,data:ref.data}});
+  const parts=[{text:prompt},{inline_data:{mimeType:base.mime,data:base.data}}];if(ref)parts.push({inline_data:{mimeType:ref.mime,data:ref.data}});
   const g=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,{method:'POST',headers:{'x-goog-api-key':process.env.GEMINI_API_KEY,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{responseModalities:['TEXT','IMAGE']}})});
   const out=await g.json();if(!g.ok)throw new Error(out?.error?.message||'Gemini request failed');
   const returned=out?.candidates?.[0]?.content?.parts||[];const img=returned.find(p=>(p.inlineData||p.inline_data)&&!(p.thought));const data=img?.inlineData||img?.inline_data;
