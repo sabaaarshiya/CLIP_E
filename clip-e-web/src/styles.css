@@ -294,3 +294,13 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 .heads4 .view0,.heads4 .view1,.heads4 .view2,.heads4 .view3{transform:none!important}
 .heads4 .view1{clip-path:polygon(35% 3%,69% 6%,85% 16%,92% 33%,88% 48%,98% 54%,85% 61%,80% 76%,63% 91%,52% 98%,37% 91%,25% 77%,17% 57%,14% 34%,21% 15%)!important}
 .heads4 .view3{clip-path:polygon(65% 3%,31% 6%,15% 16%,8% 33%,12% 48%,2% 54%,15% 61%,20% 76%,37% 91%,48% 98%,63% 91%,75% 77%,83% 57%,86% 34%,79% 15%)!important}
+
+/* Used-product state: visible hair on planning models */
+.modelHair{position:absolute;display:block;z-index:4;pointer-events:none;background:linear-gradient(145deg,#17232d,#263847 55%,#0c151d);filter:drop-shadow(0 4px 5px #0005)}
+.analyzedHair{left:9%;right:8%;top:-1%;height:37%;border-radius:48% 52% 30% 28%;clip-path:polygon(4% 35%,12% 13%,28% 3%,49% 0,72% 5%,90% 20%,98% 48%,89% 70%,78% 53%,66% 68%,55% 51%,44% 66%,31% 49%,18% 65%,7% 58%)}
+.targetHair{left:7%;right:7%;top:-2%;height:32%;border-radius:50% 50% 25% 25%;clip-path:polygon(2% 45%,9% 18%,25% 5%,48% 0,72% 6%,91% 24%,99% 55%,85% 63%,73% 48%,61% 58%,48% 43%,35% 58%,21% 48%,8% 66%)}
+.miniHair{left:8%;right:8%;top:0;height:31%;border-radius:50% 50% 25% 25%;clip-path:polygon(2% 40%,12% 12%,32% 2%,56% 0,79% 9%,96% 35%,91% 63%,75% 48%,62% 59%,48% 44%,34% 58%,19% 47%,7% 64%)}.mh0{height:38%}.mh1{height:31%}.mh2{height:27%;background:linear-gradient(145deg,#13212c,#203646)}
+.mappedHair{left:8%;right:8%;top:-1%;height:34%;border-radius:50% 50% 28% 28%;clip-path:polygon(3% 43%,10% 18%,28% 4%,51% 0,75% 8%,93% 27%,98% 55%,84% 61%,72% 47%,61% 58%,49% 43%,36% 58%,22% 47%,8% 64%);background:linear-gradient(135deg,#172631,#203b4b 50%,#ff7a32 150%)}
+.hairView1{left:22%;right:2%;clip-path:polygon(8% 39%,17% 13%,42% 2%,69% 6%,91% 24%,99% 49%,87% 62%,73% 48%,59% 58%,43% 43%,25% 57%,10% 62%)}.hairView2{height:38%;left:7%;right:7%}.hairView3{left:2%;right:22%;transform:scaleX(-1)}
+.robotHair{left:8%;right:8%;top:-1%;height:31%;border-radius:50% 50% 27% 27%;clip-path:polygon(3% 42%,11% 16%,29% 3%,52% 0,76% 8%,94% 28%,98% 55%,84% 61%,72% 47%,60% 58%,48% 43%,35% 58%,21% 47%,7% 63%)}
+.mapHead .z{z-index:5}
