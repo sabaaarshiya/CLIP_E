@@ -1,5 +1,5 @@
 /* Clip-E dashboard refresh v2 */
-import React,{useEffect,useRef,useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight,Mic,Pause,Square,Volume2,Eye,Accessibility,RotateCcw,MessageCircle}from'lucide-react';import'./styles.css';import'./ui-system.css';
+import React,{useEffect,useRef,useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight,Mic,Pause,Square,Volume2,Eye,Accessibility,RotateCcw,MessageCircle}from'lucide-react';import'./styles.css';
 
 const steps=['Discover','Scan','Profile','Styles','Preview','Head Map','Review','Setup','Live Cut','Results','History','Accessibility'];
 const styles=[['Precision Taper','Clean structure with controlled graduation.'],['Textured Crop','Shape-forward texture with manageable length.'],['Classic Short','Balanced proportions and consistent maintenance.']];
