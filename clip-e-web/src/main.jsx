@@ -1,3 +1,4 @@
+/* Clip-E dashboard refresh v2 */
 import React,{useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight}from'lucide-react';import'./styles.css';
 
 const steps=['Discover','Scan','Analyze','Select','Customize','Map','Clip-E','Journey'];
