@@ -1293,3 +1293,41 @@ main{
 @media(max-width:1000px){
   .armLandingVisual,.armLandingVisual>img{min-height:420px}
 }
+
+
+/* WebRTC phone rear-camera + live cut mapping */
+.phoneLiveView{position:relative;width:100%;height:100%;min-height:220px;overflow:hidden;border-radius:8px;background:#041421;border:1px solid #284a61}
+.phoneLiveView video,.phoneLiveView>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.phoneLiveView video.visible,.phoneLiveView.fallback>img{display:block}
+.phoneLiveView.compact{min-height:150px}
+.phoneLiveEmpty{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:8px;color:#7895a7}
+.phoneLiveEmpty svg{opacity:.7}
+.phoneLiveBadge{position:absolute;left:10px;top:10px;z-index:5;display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:999px;background:#051725d9;border:1px solid #31536c;color:#c7d8e2;font-size:9px;letter-spacing:.08em}
+.phoneLiveView.webrtc .phoneLiveBadge{color:#77deb9;border-color:#2f6f5d}
+
+.rearCutMap{position:absolute;inset:0;z-index:3;pointer-events:none}
+.cutZone{position:absolute;left:50%;transform:translateX(-50%);border:2px solid rgba(255,255,255,.8);border-radius:45%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-shadow:0 1px 4px #000}
+.cutZone span{font-size:8px;letter-spacing:.12em}.cutZone b{font-size:10px}
+.cutZone.crown{top:7%;width:49%;height:28%;background:#3f83b33b;border-color:#63a7d4}
+.cutZone.blend{top:30%;width:60%;height:29%;background:#d0a06832;border-color:#dfaa75}
+.cutZone.lower{top:55%;width:55%;height:25%;background:#df7b5233;border-color:#df7b52}
+.cutZone.nape{top:77%;width:42%;height:15%;background:#ff515125;border-color:#ff7e7e}
+.earGuard{position:absolute;top:49%;width:15%;height:24%;border:2px dashed #ff6b75;color:#ffd1d4;font-size:7px;display:grid;place-items:center;background:#55151c38}
+.earGuard.left{left:11%;border-radius:50% 35% 35% 50%}.earGuard.right{right:11%;border-radius:35% 50% 50% 35%}
+.mapCrosshair{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:42px;height:42px;border:1px solid #fff9;border-radius:50%;display:grid;place-items:center;color:white}
+.mapCrosshair:before,.mapCrosshair:after{content:"";position:absolute;background:#fff9}.mapCrosshair:before{width:58px;height:1px}.mapCrosshair:after{height:58px;width:1px}
+
+.approachAssist{grid-column:1/-1}
+.approachGrid{display:grid;grid-template-columns:minmax(320px,1.2fr) minmax(250px,.8fr);gap:16px}
+.approachInstructions{display:flex;flex-direction:column;gap:9px}
+.approachStatus{display:flex;justify-content:space-between;padding:10px 12px;border:1px solid #27495f;border-radius:7px;background:#071f33}
+.approachStatus span{color:#7f9cad;font-size:9px;letter-spacing:.11em}.approachStatus b{font-size:10px;color:#7bdcb8}
+.approachStep{display:grid;grid-template-columns:28px 1fr;gap:9px;align-items:start;padding:10px;border-bottom:1px solid #1e4057}
+.approachStep>b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#df7b52;color:#fff}
+.approachStep span{font-size:11px;color:#9fb3bf;line-height:1.5}
+.approachLegend{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:4px}
+.approachLegend span{font-size:9px;color:#8ea8b8;display:flex;gap:6px;align-items:center}
+.approachLegend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.lgTop{background:#63a7d4}.lgBlend{background:#dfaa75}.lgLower{background:#df7b52}.lgProtect{background:#ff6b75}
+.rearPip .phoneLiveView{height:100%;min-height:0}
+@media(max-width:800px){.approachGrid{grid-template-columns:1fr}.phoneLiveView{min-height:300px}}
