@@ -1512,3 +1512,219 @@ main{
 .styleSummary .hairstyleImage{
   object-position:center center!important;
 }
+
+/* Calibration camera coverage — reuses Scan computer + phone camera systems */
+.calibrationCoverage .calibrationDualGrid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:stretch;
+}
+.calibrationCoverage .calibrationCameraCard{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  padding:12px;
+  border:1px solid #31586d;
+  border-radius:14px;
+  background:#081f30;
+  transition:border-color .3s ease,background .3s ease,box-shadow .3s ease;
+}
+.calibrationCoverage .cameraRoleHead{
+  min-height:42px;
+  margin-bottom:10px;
+}
+.calibrationCoverage .cameraRoleHead small{
+  color:#7ea2b5;
+  font-size:8px;
+  letter-spacing:.11em;
+}
+.calibrationCoverage .cameraRoleHead b{
+  color:#f4f8fa;
+  font-size:12px;
+}
+.cameraFeedLive,.cameraFeedWaiting{
+  flex:0 0 auto;
+  font-size:8px;
+  letter-spacing:.08em;
+  font-weight:800;
+  padding:5px 7px;
+  border-radius:999px;
+  border:1px solid #31586d;
+}
+.cameraFeedLive{
+  color:#6ee0ba;
+  border-color:#32725e;
+  background:#0b3029;
+}
+.cameraFeedWaiting{
+  color:#8faebc;
+  background:#071a27;
+}
+.calibrationFeed{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/10;
+  min-height:250px;
+  overflow:hidden;
+  border-radius:10px;
+  background:#051725;
+  border:1px solid #294e63;
+  transition:opacity .3s ease,background .3s ease;
+}
+.calibrationComputerVideo{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+  background:#051725;
+}
+.calibrationPermissionState,
+.phoneConnectingState{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:8px;
+  padding:24px;
+  color:#91adbc;
+}
+.calibrationPermissionState svg,
+.phoneConnectingState svg{
+  color:#57ccea;
+}
+.calibrationPermissionState h3,
+.phoneConnectingState h3{
+  margin:0;
+  color:#fff;
+  font-size:14px;
+}
+.calibrationPermissionState p,
+.phoneConnectingState p{
+  max-width:300px;
+  margin:0 0 4px;
+  font-size:9px;
+  line-height:1.5;
+  color:#8faebc;
+}
+.phoneConnectingState svg{
+  animation:calibrationPulse 1.1s ease-in-out infinite;
+}
+@keyframes calibrationPulse{
+  0%,100%{opacity:.45;transform:scale(.96)}
+  50%{opacity:1;transform:scale(1.04)}
+}
+.phoneCalibrationFeed .phoneLiveView{
+  min-height:0;
+  width:100%;
+  height:100%;
+  border:0;
+  border-radius:0;
+}
+.phoneCalibrationFeed .phoneLiveView>video,
+.phoneCalibrationFeed .phoneLiveView>img{
+  object-fit:cover;
+}
+.calibrationQrState{
+  height:100%;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:18px;
+  padding:20px;
+  transition:opacity .3s ease,transform .3s ease;
+}
+.calibrationQrState .phoneQrCard{
+  flex:0 0 auto;
+}
+.calibrationQrState h3{
+  color:#fff;
+  margin:0 0 7px;
+  font-size:14px;
+}
+.calibrationQrState p{
+  color:#8faebc;
+  font-size:9px;
+  line-height:1.5;
+  margin:0 0 7px;
+}
+.calibrationQrState small{
+  color:#6f91a3;
+  font-size:7px;
+  line-height:1.4;
+}
+.calibrationPicker{
+  margin:10px 0 0!important;
+  font-size:8px!important;
+}
+.calibrationPicker select{
+  margin-top:5px;
+}
+.cameraUse{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:auto;
+  padding-top:10px;
+  color:#789bad;
+}
+.cameraUse small{
+  font-size:7px;
+  letter-spacing:.1em;
+}
+.cameraUse b{
+  color:#d9e9f0;
+  font-size:8px;
+  text-align:right;
+}
+.coverageReadyBar{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  overflow:hidden;
+  border:1px solid #294e63;
+  border-radius:10px;
+  background:#294e63;
+}
+.coverageReadyBar>div{
+  display:grid;
+  gap:4px;
+  padding:10px 11px;
+  background:#071a27;
+}
+.coverageReadyBar span{
+  color:#789bad;
+  font-size:7px;
+  letter-spacing:.06em;
+}
+.coverageReadyBar b{
+  color:#9bb4c0;
+  font-size:8px;
+}
+.coverageReadyBar.ready b{
+  color:#6ee0ba;
+}
+.coverageReadyBar>strong{
+  grid-column:1/-1;
+  text-align:center;
+  padding:9px;
+  background:#0b3029;
+  color:#6ee0ba;
+  font-size:8px;
+  letter-spacing:.12em;
+}
+@media(max-width:900px){
+  .calibrationCoverage .calibrationDualGrid{grid-template-columns:1fr}
+  .coverageReadyBar{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .calibrationQrState{grid-template-columns:1fr;text-align:center;justify-items:center}
+  .coverageReadyBar{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  .phoneConnectingState svg{animation:none!important}
+}
