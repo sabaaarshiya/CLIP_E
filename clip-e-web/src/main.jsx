@@ -1,38 +1,30 @@
 /* Clip-E dashboard refresh v2 */
-import React,{useEffect,useRef,useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight,Mic,Pause,Square,Volume2,Eye,Accessibility,RotateCcw,MessageCircle}from'lucide-react';import'./styles.css';import hairGridUrl from'../PNG.png';import PhoneCamera from'./PhoneCamera.jsx';import{QRCodeCanvas}from'qrcode.react';
+import React,{useEffect,useRef,useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight,Mic,Pause,Square,Volume2,Eye,Accessibility,RotateCcw,MessageCircle}from'lucide-react';import'./styles.css';import menBoardUrl from'../e7aa0b6f-f4b4-4903-8694-16df2601c89b.png';import womenBoardUrl from'../50 Women’s Hairstyle Variations.png';import PhoneCamera from'./PhoneCamera.jsx';import{QRCodeCanvas}from'qrcode.react';
 
 const steps=['Discover','Scan','Profile','Styles','Customize','Head Map','Review','Setup','Live Cut','Results','History','Accessibility'];
+
+const womenBoardNames=["Long Layers","Blunt Cut","U Cut","V Cut","Long Shag","Butterfly Cut","Face-Framing Layers","Curtain Bangs","Long Side Bangs","Bottleneck Bangs","Beach Waves","Soft Waves","Hollywood Waves","S Waves","Deep Waves","Loose Curls","Defined Curls","Spiral Curls","Ringlet Curls","Voluminous Curls","Long Bob (Lob)","Blunt Lob","Layered Lob","Wavy Lob","Sleek Lob","Classic Bob","French Bob","Italian Bob","A-Line Bob","Stacked Bob","Pixie Cut","Long Pixie","Textured Pixie","Bixie Cut","Pixie Bob","Modern Shag","Curly Shag","Soft Shag","Wolf Cut","Soft Wolf Cut","Jellyfish Cut","Octopus Cut","Hush Cut","Feather Cut","90s Layers","Side Part","Middle Part","Sleek Straight","Natural Texture","Tousled Texture"];
+const menBoardNames=["Textured Crop","Low Fade","Mid Fade","High Fade","Buzz Cut","Crew Cut","Classic Taper","Side Part","Curly Top","Waves","French Crop","Ivy League","Messy Fringe","Slick Back","Undercut","Bro Flow","Middle Part","Mullet","Caesar Cut","Temple Fade","Drop Fade","Burst Fade","Skin Fade","Taper Fade","Low Taper","High Taper","Pompadour","Quiff","Comb Over","Brush Up","Spiky Texture","Short Curls","Curly Fringe","Afro Taper","High Top","Twists","Short Twists","Coily Crop","Flat Top","Disconnected Undercut","Long Slick Back","Surfer Flow","Shaggy Layers","Curtain Flow","Modern Mullet","Edgar Crop","Mohawk Fade","Faux Hawk","Long Curly Flow","Natural Texture"];
+
+function styleMeta(name,slot,board){
+ const n=name.toLowerCase();
+ let length=/pixie|buzz|crew|caesar|crop|fade|taper|short|flat top|high top/.test(n)?'SHORT':/long|flow|waves|curls|layers|shag|wolf|jellyfish|octopus|feather|90s/.test(n)?'LONG':'MEDIUM';
+ let patterns=/curl|coily|afro|twist/.test(n)?['CURLY','COILY','WAVY']:/wave|texture|shag|wolf|mullet|flow/.test(n)?['WAVY','CURLY','STRAIGHT']:['STRAIGHT','WAVY'];
+ let density=/blunt|bob|pixie|buzz|fade|taper/.test(n)?['LOW','MEDIUM','HIGH']:['MEDIUM','HIGH'];
+ let maintenance=/buzz|crew|natural texture|tousled|soft shag|bro flow/.test(n)?'LOW':/skin fade|high fade|pompadour|jellyfish|stacked bob|pixie/.test(n)?'HIGH':'MEDIUM';
+ const tags=[];
+ if(/layer|shag|wolf|butterfly|feather|octopus|jellyfish|flow/.test(n))tags.push('LAYERED');
+ if(/texture|crop|shag|wolf|messy|tousled|spiky|curly|waves|twist/.test(n))tags.push('TEXTURED');
+ if(/fade|taper|undercut/.test(n))tags.push('FADE/TAPER');
+ if(/bang|fringe|curtain/.test(n))tags.push('FRINGE/BANGS');
+ if(/bob|lob/.test(n))tags.push('BOB');
+ if(maintenance==='LOW')tags.push('LOW MAINTENANCE');
+ const assist=length==='SHORT'?['Back','Sides','Around ears','Neckline']:['Back','Sides','Layers'];
+ return{name,slot,board,length,patterns,density,maintenance,tags,assist,description:`${name} interpreted as a Clip-E target style using the uploaded reference board.`};
+}
 const unifiedStyles=[
-{name:'Textured Crop',slot:0,length:'SHORT',patterns:['STRAIGHT','WAVY','CURLY'],density:['MEDIUM','HIGH'],maintenance:'LOW',tags:['TEXTURED','FRINGE/BANGS','LOW MAINTENANCE'],assist:['Back','Sides','Texture'],description:'Short textured shape with controlled sides and a broken-up top.'},
-{name:'Low Fade',slot:1,length:'SHORT',patterns:['STRAIGHT','WAVY','CURLY','COILY'],density:['LOW','MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['FADE/TAPER'],assist:['Back','Sides','Around ears'],description:'A low transition focused around the lower sides, back, and neckline.'},
-{name:'Mid Fade',slot:2,length:'SHORT',patterns:['STRAIGHT','WAVY','CURLY','COILY'],density:['LOW','MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['FADE/TAPER'],assist:['Back','Sides','Around ears'],description:'A balanced fade transition through the middle sides and back.'},
-{name:'High Fade',slot:3,length:'SHORT',patterns:['STRAIGHT','WAVY','CURLY','COILY'],density:['MEDIUM','HIGH'],maintenance:'HIGH',tags:['FADE/TAPER'],assist:['Back','Sides','Around ears'],description:'A higher fade that concentrates maintenance around side and rear transitions.'},
-{name:'Buzz Cut',slot:4,length:'SHORT',patterns:['STRAIGHT','WAVY','CURLY','COILY'],density:['LOW','MEDIUM','HIGH'],maintenance:'LOW',tags:['LOW MAINTENANCE'],assist:['Back','Neckline'],description:'Very short, even length with simple recurring back and neckline maintenance.'},
-{name:'Crew Cut',slot:5,length:'SHORT',patterns:['STRAIGHT','WAVY'],density:['MEDIUM','HIGH'],maintenance:'LOW',tags:['TEXTURED','LOW MAINTENANCE'],assist:['Back','Sides'],description:'Short structured top with clean side and back control.'},
-{name:'Classic Taper',slot:6,length:'SHORT',patterns:['STRAIGHT','WAVY','CURLY'],density:['LOW','MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['FADE/TAPER'],assist:['Back','Sides','Neckline'],description:'Gradual tapering around the sides and neckline while preserving more length above.'},
-{name:'Side Part',slot:7,length:'MEDIUM',patterns:['STRAIGHT','WAVY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED'],assist:['Sides','Back'],description:'Directional medium shape with controlled sides and a defined part.'},
-{name:'Curly Top',slot:8,length:'MEDIUM',patterns:['CURLY','COILY','WAVY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['TEXTURED'],assist:['Sides','Back','Blend'],description:'Preserves curl volume on top while keeping the sides and back controlled.'},
-{name:'Waves',slot:9,length:'SHORT',patterns:['WAVY','CURLY','COILY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['TEXTURED'],assist:['Back','Sides'],description:'Short wave-emphasizing shape with even support through sides and back.'},
-{name:'French Crop',slot:10,length:'SHORT',patterns:['STRAIGHT','WAVY'],density:['MEDIUM','HIGH'],maintenance:'LOW',tags:['TEXTURED','FRINGE/BANGS','LOW MAINTENANCE'],assist:['Back','Sides'],description:'Short crop with a compact fringe and controlled perimeter.'},
-{name:'Ivy League',slot:11,length:'SHORT',patterns:['STRAIGHT','WAVY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['FADE/TAPER'],assist:['Sides','Back'],description:'A longer crew-style shape with a polished taper around the perimeter.'},
-{name:'Messy Fringe',slot:12,length:'MEDIUM',patterns:['STRAIGHT','WAVY','CURLY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['TEXTURED','FRINGE/BANGS'],assist:['Sides','Back'],description:'Forward textured fringe with movement and softer side transitions.'},
-{name:'Slick Back',slot:13,length:'MEDIUM',patterns:['STRAIGHT','WAVY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED'],assist:['Sides','Back'],description:'Medium swept-back shape that relies on clean side and rear structure.'},
-{name:'Undercut',slot:14,length:'MEDIUM',patterns:['STRAIGHT','WAVY','CURLY'],density:['MEDIUM','HIGH'],maintenance:'HIGH',tags:['FADE/TAPER'],assist:['Back','Sides','Around ears'],description:'Longer top with a strong length contrast at the sides and back.'},
-{name:'Bro Flow',slot:15,length:'LONG',patterns:['STRAIGHT','WAVY','CURLY'],density:['MEDIUM','HIGH'],maintenance:'LOW',tags:['LAYERED','LOW MAINTENANCE'],assist:['Back','Layers'],description:'Longer flowing shape that keeps natural movement through the sides and back.'},
-{name:'Middle Part',slot:16,length:'MEDIUM',patterns:['STRAIGHT','WAVY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED'],assist:['Sides','Back','Layers'],description:'Center-parted medium shape with balanced side and rear flow.'},
-{name:'Mullet',slot:17,length:'LONG',patterns:['STRAIGHT','WAVY','CURLY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED','TEXTURED'],assist:['Back','Layers','Sides'],description:'Shorter front and sides with intentionally retained rear length.'},
-{name:'Long Layers',slot:18,length:'LONG',patterns:['STRAIGHT','WAVY','CURLY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED'],assist:['Back','Layers'],description:'Long layered shape that preserves length while redistributing movement.'},
-{name:'Soft Waves',slot:19,length:'LONG',patterns:['WAVY','CURLY'],density:['LOW','MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED'],assist:['Back','Layers'],description:'Long soft wave shape with blended layers and preserved movement.'},
-{name:'Beach Waves',slot:20,length:'LONG',patterns:['WAVY','CURLY'],density:['MEDIUM','HIGH'],maintenance:'LOW',tags:['TEXTURED','LOW MAINTENANCE'],assist:['Back','Layers'],description:'Relaxed long wave shape with texture and low-precision perimeter maintenance.'},
-{name:'Straight & Sleek',slot:21,length:'LONG',patterns:['STRAIGHT'],density:['LOW','MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LOW MAINTENANCE'],assist:['Back','Ends'],description:'Long straight shape with a controlled perimeter and even back line.'},
-{name:'Curtain Bangs',slot:22,length:'MEDIUM',patterns:['STRAIGHT','WAVY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['FRINGE/BANGS','LAYERED'],assist:['Sides','Layers'],description:'Face-framing fringe with longer blended side sections.'},
-{name:'Face Framing',slot:23,length:'LONG',patterns:['STRAIGHT','WAVY','CURLY'],density:['LOW','MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED'],assist:['Sides','Layers'],description:'Long shape with graduated sections around the face and sides.'},
-{name:'Butterfly Cut',slot:24,length:'LONG',patterns:['STRAIGHT','WAVY'],density:['MEDIUM','HIGH'],maintenance:'HIGH',tags:['LAYERED'],assist:['Back','Layers','Sides'],description:'Layer-heavy long shape with shorter framing layers and fuller rear length.'},
-{name:'Wolf Cut',slot:25,length:'MEDIUM',patterns:['WAVY','CURLY','STRAIGHT'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED','TEXTURED'],assist:['Back','Layers','Sides'],description:'Highly layered medium shape with visible texture and rear movement.'},
-{name:'Shag',slot:26,length:'MEDIUM',patterns:['WAVY','CURLY','STRAIGHT'],density:['MEDIUM','HIGH'],maintenance:'LOW',tags:['LAYERED','TEXTURED','FRINGE/BANGS'],assist:['Back','Layers'],description:'Textured layered shape with flexible perimeter and natural movement.'},
-{name:'Blunt Cut',slot:27,length:'MEDIUM',patterns:['STRAIGHT','WAVY'],density:['LOW','MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['BOB'],assist:['Back','Ends'],description:'Even perimeter shape where the back line and symmetry matter strongly.'},
-{name:'Side Part Waves',slot:28,length:'LONG',patterns:['WAVY','CURLY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED'],assist:['Back','Layers','Sides'],description:'Long side-parted wave shape with blended movement through the back.'},
-{name:'Curly Long',slot:35,length:'LONG',patterns:['CURLY','COILY','WAVY'],density:['MEDIUM','HIGH'],maintenance:'MEDIUM',tags:['LAYERED'],assist:['Back','Layers','Ends'],description:'Long curl-preserving shape with layered support and careful back length control.'}
+ ...menBoardNames.map((name,slot)=>styleMeta(name,slot,'men')),
+ ...womenBoardNames.map((name,slot)=>styleMeta(name,slot,'women'))
 ];
 const styles=unifiedStyles.map(s=>[s.name,s.description]);
 
@@ -70,7 +62,7 @@ function personalizedStyles(hair,shape){
    return{...item,index,score,why:reasons.slice(0,2).join(' and ')||'keeps the cut compatible with your current visible profile'};
  }).sort((a,b)=>b.score-a.score);
 }
-function hairCropStyle(slot){return{'--slot':slot,'--x':((slot%9)*12.5)+'%','--y':(Math.floor(slot/9)*33.333)+'%'}}
+function hairCropStyle(slotOrItem){const item=typeof slotOrItem==='object'?slotOrItem:unifiedStyles.find(x=>x.slot===slotOrItem)||{slot:slotOrItem,board:'men'};const col=item.slot%5,row=Math.floor(item.slot/5);return{backgroundImage:`url(${item.board==='women'?womenBoardUrl:menBoardUrl})`,backgroundSize:'500% 1000%','--x':(col*25)+'%','--y':(row*(100/9))+'%'}}}
 const zones=[['Top','12 mm','4 mm'],['Sides','9 mm','6 mm'],['Back','9 mm','5 mm'],['Neckline','6 mm','3 mm']];
 
 function ConceptHead({view='front',hair='crop',technical=false,active=false,className=''}){return <div className={'conceptHead '+view+' '+hair+' '+(technical?'technical ':'')+(active?'active ':'')+className}><div className="cranium"/><div className="ear earL"/><div className="ear earR"/><div className="facePlane"><i className="brow browL"/><i className="brow browR"/><i className="eye eyeL"/><i className="eye eyeR"/><i className="nose"/><i className="mouth"/><i className="jaw"/></div><div className="neck"/><div className="hairMass"><i/><i/><i/><i/><i/><i/><i/></div><div className="fade fadeL"/><div className="fade fadeR"/>{technical&&<><div className="contour c1"/><div className="contour c2"/><div className="contour c3"/><span className="scanPoint sp1"/><span className="scanPoint sp2"/><span className="scanPoint sp3"/></>}{active&&<div className="cutHeat"/>}</div>}
