@@ -21,3 +21,54 @@
 @keyframes zonePulse{0%,100%{opacity:.6;transform:scale(.98)}50%{opacity:1;transform:scale(1.03)}}
 @keyframes statusPulse{0%,100%{opacity:.65;box-shadow:0 0 5px #41d99a}50%{opacity:1;box-shadow:0 0 16px #41d99a}}
 @media(prefers-reduced-motion:reduce){.robotCard .arm,.robotPreview .arm,.robotStage .arm,.arm .path,.motionline,.arc,.scanner:before,.mapHead,.z,.status i,.robotCard:after,.robotStage:after,.scanner:after{animation:none!important}}
+
+/* Production visual refinement — restrained Clip-E hardware language */
+:root{--ink:#14212b;--muted:#61717d;--paper:#f7f7f4;--surface:#fff;--line:#dbe2e7;--blue:#1d5f91;--blue-soft:#eaf2f7;--orange:#df7b52;--orange-soft:#faeee8;font-family:Inter,"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:var(--paper)}
+body{background:var(--paper);color:var(--ink);letter-spacing:-.005em}
+.app{background:var(--paper)}
+header{height:76px;background:#f7f7f4f2;border-bottom:1px solid var(--line);backdrop-filter:blur(14px);box-shadow:none}
+.brand{color:var(--ink);letter-spacing:.045em}.brand small{color:#7a8993;letter-spacing:.13em}.mark{border-color:var(--orange);color:var(--orange);border-radius:7px}
+nav button{color:#788791;font-weight:650;letter-spacing:.07em}nav button.active{color:var(--orange)}
+.status{color:#687983}.progress{background:#e6eaed}.progress span{background:var(--orange)}
+main{max-width:1380px;padding-top:82px}.eyebrow{color:var(--orange);font-size:10px;letter-spacing:.18em}
+h1{color:var(--ink);font-weight:650;letter-spacing:-.045em;font-size:clamp(38px,4.7vw,66px)}
+h2,h3,h4{color:var(--ink)}.lead{color:var(--muted);max-width:720px}
+.hero{gap:7vw}.hero h2{color:var(--ink);font-weight:620}.hero h2 em{color:var(--orange)}
+.hero p{color:var(--muted)}.pill{background:transparent;border:1px solid var(--line);color:#5f7483;border-radius:3px}
+.primary{background:var(--orange);border-color:var(--orange);color:#fff;border-radius:4px;box-shadow:none}.primary:hover{background:#d66f46;box-shadow:0 8px 20px #a65c3820}
+.ghost{background:#fff;border-color:#ccd6dc;color:#385062;border-radius:4px}.ghost:hover{border-color:var(--blue);color:var(--blue)}
+.features{color:#657783}.features svg{color:var(--blue)}
+.robotCard,.panel,.scanner,.heatmap,.robotPreview,.robotStage,.styleCard,.preview,.head,.metrics,.triptych>div{background:#fff;border:1px solid var(--line);box-shadow:0 12px 32px #2033420b;border-radius:6px}
+.robotCard,.robotStage,.scanner{background-color:#f4f7f8;background-image:linear-gradient(#dce6eb66 1px,transparent 1px),linear-gradient(90deg,#dce6eb66 1px,transparent 1px);background-size:40px 40px}
+.techLabel,.readout,.head span,.scanner small{color:#687b88}.readout{border-color:var(--line)}.readout b{color:var(--orange)}
+.why{background:transparent;border-top:1px solid var(--line);border-bottom:1px solid var(--line);gap:0}.why article{background:transparent;border-right:1px solid var(--line);padding:34px 38px}.why article:last-child{border-right:0}.why b{color:var(--orange)}.why p,.panel p{color:var(--muted)}
+.scanner:before{border-color:#8da8b9}.scanline{background:var(--orange);box-shadow:0 0 10px #df7b5245}.privacy,.safe{background:#f0f7f5;border-color:#cfe2dc;color:#3c7868;border-radius:4px}
+.panel h3{font-weight:620}.panel hr{border-color:var(--line)}
+.metrics div,.zone,.checklist>div{border-color:var(--line)}.metrics span,.zone span,label{color:#687985}.metrics b,.zone b{color:var(--ink)}
+select{background:#fff;color:var(--ink);border:1px solid #ccd7dd;border-radius:3px}
+.styleCard{color:var(--ink);box-shadow:none}.styleCard:hover,.styleCard.selected{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 10px 25px #283d4a0d}.styleCard p{color:var(--muted)}.styleCard>b,.match{color:var(--orange)}
+.hair{background:radial-gradient(ellipse at 50% 60%,#d9e5eb 0 28%,transparent 29%),linear-gradient(140deg,#eef3f5,#f9faf9);border-color:var(--line)}.h1{background:radial-gradient(ellipse at 50% 50%,#cfdee6 0 31%,transparent 32%),linear-gradient(140deg,#edf3f5,#fafafa)}.h2{background:radial-gradient(ellipse at 50% 65%,#dce7ec 0 26%,transparent 27%),linear-gradient(140deg,#edf3f5,#fafafa)}
+.preview span,.robotStage>b{color:var(--orange)}.controls label b{color:var(--ink)}.controls input{accent-color:var(--orange)}
+.mesh,.silhouette,.minihead,.mapHead,.wirehead{border-color:#78a0ba;background:radial-gradient(circle at 50% 35%,#cfe1ea,#eef4f6 64%);box-shadow:inset 0 0 30px #6fa3c021}
+.mapHead{background:linear-gradient(#477ea2 0 25%,#76a3bd 25% 45%,#d89b7e 45% 70%,#df7b52 70%)}.z{border-color:#f1b99e}.tabs{color:#718591}.tabs b{color:var(--orange)}
+.legend{color:#71818b}.legend i{background:#5d8cab}.legend i:nth-of-type(2){background:#bd947e}.legend i:nth-of-type(3){background:var(--orange)}
+.motionline,.arc,.arm .path{border-color:var(--orange);border-left-color:transparent;border-bottom-color:transparent}
+.arm .joint{background:var(--orange);border-color:#1e577d;box-shadow:none}.arm .link{border-color:#2b648c;background:linear-gradient(90deg,#245d84 0 18%,#eef2f2 18% 82%,#245d84 82%)}.arm .base{background:#f2f3f1;border-color:#285f85}.arm .tool{color:var(--orange)}
+.tags span,.future span{border-color:#cbd9e1;color:#587386;background:#fff}.future{border-color:var(--line)}.future p,.timeline p{color:var(--muted)}.timeline{border-color:#b9ccd7}.timeline article i{background:var(--orange)}.timeline article>b{color:var(--orange)}
+.avatar{border-color:var(--orange);color:var(--orange)}
+.danger{background:#fff4f2;color:#a84d45;border-color:#e5b9b3;border-radius:3px}
+.primary,.ghost,.styleCard,nav button,.mark,.tags span,.future span{transition:transform .22s cubic-bezier(.2,.7,.2,1),background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease}
+/* calm, purposeful motion only */
+.robotCard:after,.robotStage:after,.scanner:after{display:none}
+.robotCard .arm{animation:armIdlePro 7s cubic-bezier(.45,0,.55,1) infinite}
+.robotPreview .arm{animation:armMapPro 5.5s cubic-bezier(.45,0,.55,1) infinite}
+.robotStage .arm{animation:armReadyPro 6s cubic-bezier(.45,0,.55,1) infinite}
+.robotCard .j2,.robotCard .j3,.status i,.mapHead,.z{animation:none}
+.arm .path,.motionline,.arc{animation:pathPro 3.4s ease-in-out infinite}
+.scanner:before{animation:none}.scanline{animation:scanPro 3s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes armIdlePro{0%,100%{transform:translate(-50%,-42%) rotate(0)}50%{transform:translate(-49%,-43%) rotate(1.5deg)}}
+@keyframes armMapPro{0%,100%{transform:scale(.65) rotate(-1deg)}50%{transform:scale(.65) translate(7px,-4px) rotate(2.5deg)}}
+@keyframes armReadyPro{0%,100%{transform:translate(-50%,-50%) scale(.85) rotate(-1deg)}50%{transform:translate(-48%,-51%) scale(.85) rotate(2deg)}}
+@keyframes pathPro{0%,100%{opacity:.38}50%{opacity:.78}}
+@keyframes scanPro{0%{top:18%;opacity:.35}50%{opacity:1}100%{top:80%;opacity:.35}}
+@media(max-width:900px){.why article{border-right:0;border-bottom:1px solid var(--line)}}
