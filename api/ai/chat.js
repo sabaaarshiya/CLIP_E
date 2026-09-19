@@ -61,7 +61,7 @@ export default async function handler(req, res) {
       }),
     });
 
-    const model = process.env.OPENAI_MODEL || 'gpt-5.6-luna';
+    const model = String(process.env.OPENAI_MODEL || 'gpt-5.6-luna').trim().toLowerCase();
     const r = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: {
