@@ -1504,3 +1504,11 @@ main{
   min-width:200px!important;
   width:200px!important;
 }
+
+/* Center hairstyle portraits proportionally inside the uniform 4:5 frame */
+.libraryCard .hairstyleImage,
+.profileMatchCard .hairstyleImage,
+.referencePreview .hairstyleImage,
+.styleSummary .hairstyleImage{
+  object-position:center center!important;
+}
