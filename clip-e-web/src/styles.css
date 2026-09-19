@@ -376,3 +376,10 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 
 .styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:66.666%!important}
 .styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:100%!important}
+
+/* Final clean hairstyle cards: hide poster UI/text inside each crop */
+.hairSlot{padding:0!important;background:#0a2639!important;border-radius:8px!important;min-height:0!important}
+.hairCrop{height:148px!important;aspect-ratio:auto!important;border-radius:7px 7px 0 0!important;transform:scale(1.18);transform-origin:50% 42%;clip-path:inset(8% 7% 20% 7% round 5px);margin:-5px 0 -22px!important}
+.hairSlot>b{position:relative!important;z-index:3!important;background:#0a2639!important;display:block!important;padding:10px 8px 9px!important;text-align:center!important;font-size:9px!important;line-height:1.1!important;color:#e6f5fb!important}
+.hairSlot>small{display:none!important}
+.hairSlots{gap:10px!important}
