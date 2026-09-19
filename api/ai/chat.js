@@ -1,23 +1,35 @@
 import { CLIP_E_SYSTEM_PROMPT, buildClipEContext } from './project-context.js';
 
-function imagePartFromDataUrl(value) {
+function validImageDataUrl(value) {
   if (typeof value !== 'string') return null;
-  const match = value.match(/^data:(image\/(?:jpeg|jpg|png|webp));base64,(.+)$/i);
+  const match = value.match(/^data:image\/(?:jpeg|jpg|png|webp);base64,(.+)$/i);
   if (!match) return null;
-  const data = match[2];
-  // Keep inline requests comfortably below Gemini's overall request-size limit.
-  if (data.length > 8_000_000) return null;
-  return {
-    inlineData: {
-      mimeType: match[1].toLowerCase() === 'image/jpg' ? 'image/jpeg' : match[1].toLowerCase(),
-      data,
-    },
-  };
+  // Keep the inline frame small enough for a fast conversational request.
+  if (match[1].length > 8_000_000) return null;
+  return value;
+}
+
+function extractResponseText(response) {
+  if (typeof response?.output_text === 'string' && response.output_text.trim()) {
+    return response.output_text.trim();
+  }
+
+  const chunks = [];
+  for (const item of response?.output || []) {
+    for (const part of item?.content || []) {
+      if (part?.type === 'output_text' && typeof part.text === 'string') {
+        chunks.push(part.text);
+      }
+    }
+  }
+  return chunks.join('').trim();
 }
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-  if (!process.env.GEMINI_API_KEY) return res.status(503).json({ error: 'Gemini is not configured' });
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(503).json({ error: 'OpenAI is not configured' });
+  }
 
   try {
     const { message, transcript, context, frameDataUrl } = req.body || {};
@@ -25,54 +37,54 @@ export default async function handler(req, res) {
     if (!spokenInput) return res.status(400).json({ error: 'Missing user speech/text' });
 
     const clipEContext = buildClipEContext(context || {});
-    const parts = [];
+    const content = [];
 
-    const frame = imagePartFromDataUrl(frameDataUrl);
+    const frame = validImageDataUrl(frameDataUrl);
     if (frame) {
-      parts.push(frame);
-      parts.push({
+      content.push({
+        type: 'input_image',
+        image_url: frame,
+        detail: 'low',
+      });
+      content.push({
+        type: 'input_text',
         text:
-          'This is a current laptop-camera frame from the haircut interaction. Use it only as supplemental visual context under the VISION RULES in your system instructions.',
+          'This is a current laptop-camera frame from the haircut interaction. Use it only as supplemental visual context under the VISION RULES in your instructions.',
       });
     }
 
-    parts.push({
+    content.push({
+      type: 'input_text',
       text: JSON.stringify({
         barberSpeech: spokenInput,
         clipEContext,
       }),
     });
 
-    const r = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': process.env.GEMINI_API_KEY,
-        },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: CLIP_E_SYSTEM_PROMPT }] },
-          contents: [{ role: 'user', parts }],
-          generationConfig: {
-            temperature: 0.35,
-            maxOutputTokens: 140,
-          },
-        }),
-      }
-    );
+    const model = process.env.OPENAI_MODEL || 'gpt-5.6-luna';
+    const r = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model,
+        instructions: CLIP_E_SYSTEM_PROMPT,
+        input: [{ role: 'user', content }],
+        max_output_tokens: 180,
+        reasoning: { effort: 'low' },
+      }),
+    });
 
     const j = await r.json();
-    if (!r.ok) throw Error(j?.error?.message || 'Gemini request failed');
+    if (!r.ok) throw Error(j?.error?.message || 'OpenAI request failed');
 
-    const text = j?.candidates?.[0]?.content?.parts
-      ?.map((x) => x.text || '')
-      .join('')
-      .trim();
-
+    const text = extractResponseText(j);
     return res.status(200).json({
       text: text || 'I’m here. What would you like to know about your cut?',
       usedVisualContext: Boolean(frame),
+      model,
     });
   } catch (e) {
     return res.status(500).json({ error: e.message });
