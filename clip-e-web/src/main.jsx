@@ -4,7 +4,7 @@ import React,{useEffect,useRef,useState} from'react';import{createRoot}from'reac
 const steps=['Discover','Scan','Profile','Styles','Customize','Head Map','Review','Setup','Live Cut','Results','History','Accessibility'];
 
 const womenBoardNames=["Long Layers","Blunt Cut","U Cut","V Cut","Long Shag","Butterfly Cut","Face-Framing Layers","Curtain Bangs","Long Side Bangs","Bottleneck Bangs","Beach Waves","Soft Waves","Hollywood Waves","S Waves","Deep Waves","Loose Curls","Defined Curls","Spiral Curls","Ringlet Curls","Voluminous Curls","Long Bob (Lob)","Blunt Lob","Layered Lob","Wavy Lob","Sleek Lob","Classic Bob","French Bob","Italian Bob","A-Line Bob","Stacked Bob","Pixie Cut","Long Pixie","Textured Pixie","Bixie Cut","Pixie Bob","Modern Shag","Curly Shag","Soft Shag","Wolf Cut","Soft Wolf Cut","Jellyfish Cut","Octopus Cut","Hush Cut","Feather Cut","90s Layers","Side Part","Middle Part","Sleek Straight","Natural Texture","Tousled Texture"];
-const menBoardNames=["Textured Crop","Low Fade","Mid Fade","High Fade","Buzz Cut","Crew Cut","Classic Taper","Side Part","Curly Top","Waves","French Crop","Ivy League","Messy Fringe","Slick Back","Undercut","Bro Flow","Middle Part","Mullet","Caesar Cut","Temple Fade","Drop Fade","Burst Fade","Skin Fade","Taper Fade","Low Taper","High Taper","Pompadour","Quiff","Comb Over","Brush Up","Spiky Texture","Short Curls","Curly Fringe","Afro Taper","High Top","Medium Layers","Longer Layers","Surfer Hair","Bro Flow","Medium Shag","Curtain Fringe","Middle Part","Loose Waves","Defined Curls","Tight Curls","Edgar Crop","Mohawk Fade","Faux Hawk","Long Curly Flow","Natural Texture"];
+const menBoardNames=["Textured Crop","Low Fade","Mid Fade","High Fade","Buzz Cut","Crew Cut","French Crop","Caesar Cut","Taper Fade","Waves","Classic Taper","Side Part","Hard Part","Ivy League","Short Quiff","Messy Fringe","Straight Fringe","Curly Fringe","Short Shag","Modern Caesar","Drop Fade","Burst Fade","Skin Fade","Low Taper","High Taper","Pompadour","Quiff","Comb Over","Brush Up","Spiky Texture","Short Curls","Curly Top","Afro Taper","High Top","Twists","Medium Layers","Longer Layers","Surfer Hair","Bro Flow","Medium Shag","Curtain Fringe","Middle Part","Loose Waves","Defined Curls","Tight Curls","Edgar Crop","Mohawk Fade","Faux Hawk","Long Curly Flow","Natural Texture"];
 
 function styleMeta(name,slot,board){
  const n=name.toLowerCase();
@@ -63,8 +63,8 @@ function personalizedStyles(hair,shape){
  }).sort((a,b)=>b.score-a.score);
 }
 const BOARD_LAYOUT={
- men:{cols:10,rows:5,top:.145,bottom:.018,left:.018,right:.018,innerX:.10,innerY:.08,innerW:.80,innerH:.68},
- women:{cols:10,rows:5,top:.145,bottom:.018,left:.018,right:.018,innerX:.10,innerY:.08,innerW:.80,innerH:.68}
+ men:{cols:5,rows:10,top:.105,bottom:.012,left:.012,right:.012,innerX:.08,innerY:.045,innerW:.84,innerH:.70},
+ women:{cols:5,rows:10,top:.105,bottom:.012,left:.012,right:.012,innerX:.08,innerY:.045,innerW:.84,innerH:.70}
 };
 function hairCropStyle(slotOrItem){
  const item=typeof slotOrItem==='object'?slotOrItem:unifiedStyles.find(x=>x.slot===slotOrItem)||{slot:slotOrItem,board:'men'};
