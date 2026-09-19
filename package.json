@@ -3,6 +3,7 @@
   "dependencies": {
     "@vercel/blob": "^2.8.0",
     "pg": "^8.13.1",
-    "@google/genai": "latest"
+    "@google/genai": "latest",
+    "sharp": "latest"
   }
 }
