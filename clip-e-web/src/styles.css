@@ -836,3 +836,23 @@ main{animation:uiPageIn var(--ui-slow) var(--ui-ease)}
   .customStudio.noControls{grid-template-columns:1fr}
   .customStudio.noControls .styleGallery{max-height:none!important}
 }
+
+/* Recommended hairstyle lineup */
+.recommendedLineup{max-width:1180px;margin:28px auto 0}
+.recommendationLineupTop{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:18px}
+.recommendationLineupTop h2{font-size:30px;margin:5px 0 6px}
+.recommendationLineupTop p{max-width:650px;margin:0;color:#8fb1c1}
+.recommendationLineupTop .styleGender{min-width:300px}
+.recommendedCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.recommendedCard{position:relative;text-align:left;background:#0a293b;border:1px solid #31586d;border-radius:14px;overflow:hidden;color:#fff;padding:0;cursor:pointer}
+.recommendedCard:hover,.recommendedCard.chosen{border-color:#ff7a32;box-shadow:0 0 0 1px #ff7a3233}
+.recommendedCard .hairCrop{width:100%;aspect-ratio:1/1.03;border-radius:0}
+.recommendedRank{position:absolute;z-index:3;top:12px;left:12px;background:#071a27e8;border:1px solid #ff7a32;color:#ff9a61;border-radius:999px;padding:6px 9px;font-size:9px;font-weight:800;letter-spacing:.12em}
+.recommendedCardCopy{padding:16px}
+.recommendedCardCopy small{font-size:8px;letter-spacing:.14em;color:#ff9a61}
+.recommendedCardCopy h3{font-size:22px;margin:5px 0 6px}
+.recommendedCardCopy p{color:#8fb1c1;font-size:11px;line-height:1.45;min-height:46px}
+.recommendedCardCopy>span{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700}
+.recommendedFooter{display:flex;align-items:center;gap:18px;margin-top:16px;padding:14px 16px;border:1px solid #31586d;background:#082234;border-radius:12px}
+.recommendedFooter>div{display:grid;gap:3px;flex:1}.recommendedFooter small{color:#8fb1c1}
+@media(max-width:900px){.recommendedCards{grid-template-columns:1fr}.recommendationLineupTop{align-items:flex-start;flex-direction:column}.recommendationLineupTop .styleGender{min-width:0;width:100%}.recommendedFooter{align-items:flex-start;flex-wrap:wrap}}
