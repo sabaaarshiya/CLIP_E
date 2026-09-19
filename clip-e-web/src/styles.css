@@ -1337,3 +1337,7 @@ main{
 .armAssistControls input{width:100%;margin-top:6px;padding:10px 11px;border:1px solid #31536c;border-radius:6px;background:#071f33;color:#eef5f8}
 .armAssistControls .row{margin-top:9px}
 .armAssistControls small{display:block;margin-top:8px;color:#8fa8b8;line-height:1.4}
+
+.phoneMountChecklist{display:grid;gap:5px;margin:10px 0;padding:10px 12px;border:1px solid #2c5169;border-radius:8px;background:#071f33}
+.phoneMountChecklist b{font-size:11px;color:#eef5f8}
+.phoneMountChecklist span{font-size:10px;color:#91a9b8;line-height:1.4}
