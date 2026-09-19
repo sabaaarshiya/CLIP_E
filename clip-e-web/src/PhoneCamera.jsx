@@ -2,7 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {Camera,RefreshCw,Wifi,WifiOff} from 'lucide-react';
 
 export default function PhoneCamera(){
-  const videoRef=useRef(null),canvasRef=useRef(null),timerRef=useRef(null),streamRef=useRef(null);
+  const videoRef=useRef(null),canvasRef=useRef(null),timerRef=useRef(null),streamRef=useRef(null),pcRef=useRef(null),answerTimerRef=useRef(null);
   const [running,setRunning]=useState(false);
   const [status,setStatus]=useState('Ready');
   const [seq,setSeq]=useState(0);
@@ -10,6 +10,53 @@ export default function PhoneCamera(){
   const [token,setToken]=useState('');
   const [expiresAt,setExpiresAt]=useState(0);
   const session=new URLSearchParams(location.search).get('session')||'demo';
+  const rtcConfig={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
+
+  function waitIce(pc,timeout=3500){
+    if(pc.iceGatheringState==='complete')return Promise.resolve();
+    return new Promise(resolve=>{
+      const done=()=>{pc.removeEventListener('icegatheringstatechange',check);resolve()};
+      const check=()=>{if(pc.iceGatheringState==='complete')done()};
+      pc.addEventListener('icegatheringstatechange',check);
+      setTimeout(done,timeout);
+    });
+  }
+
+  async function startWebRTC(stream){
+    pcRef.current?.close();
+    if(answerTimerRef.current)clearInterval(answerTimerRef.current);
+
+    const pc=new RTCPeerConnection(rtcConfig);
+    pcRef.current=pc;
+    stream.getTracks().forEach(track=>pc.addTrack(track,stream));
+    pc.onconnectionstatechange=()=>{
+      if(pc.connectionState==='connected')setStatus('WebRTC live · rear-head stream connected');
+      if(pc.connectionState==='failed')setStatus('WebRTC unavailable · snapshot fallback active');
+    };
+
+    const offer=await pc.createOffer({offerToReceiveAudio:false,offerToReceiveVideo:false});
+    await pc.setLocalDescription(offer);
+    await waitIce(pc);
+
+    const post=await fetch('/api/camera/signal',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({session,type:'offer',sdp:pc.localDescription})
+    });
+    if(!post.ok)throw Error('Could not publish live-camera offer');
+
+    answerTimerRef.current=setInterval(async()=>{
+      try{
+        const r=await fetch('/api/camera/signal?session='+encodeURIComponent(session),{cache:'no-store'});
+        const j=await r.json();
+        if(j.answer&&pc.signalingState==='have-local-offer'){
+          await pc.setRemoteDescription(j.answer);
+          clearInterval(answerTimerRef.current);
+          answerTimerRef.current=null;
+        }
+      }catch{}
+    },800);
+  }
 
   async function getToken(){
     const r=await fetch('/api/camera/phone-token',{cache:'no-store'});
@@ -29,7 +76,8 @@ export default function PhoneCamera(){
       streamRef.current=s;
       if(videoRef.current){videoRef.current.srcObject=s;await videoRef.current.play();}
       await getToken();
-      setRunning(true);setStatus('Connected · dedicated rear-head view');
+      await startWebRTC(s).catch(()=>setStatus('Snapshot fallback active'));
+      setRunning(true);if(pcRef.current?.connectionState!=='connected')setStatus('Rear camera active · waiting for computer');
     }catch(e){setStatus(e.message||'Camera permission failed');setRunning(false)}
   }
 
@@ -38,6 +86,8 @@ export default function PhoneCamera(){
     timerRef.current=null;
     streamRef.current?.getTracks().forEach(t=>t.stop());
     streamRef.current=null;
+    pcRef.current?.close();pcRef.current=null;
+    if(answerTimerRef.current)clearInterval(answerTimerRef.current);answerTimerRef.current=null;
     setRunning(false);
   }
 
@@ -89,7 +139,7 @@ export default function PhoneCamera(){
         <input type="range" min="1" max="5" value={fps} onChange={e=>setFps(Number(e.target.value))}/>
         <p>{status}</p>
         {!running?<button className="primary big" onClick={start}><Camera size={18}/> Start rear camera</button>:<button className="ghost big" onClick={stop}><RefreshCw size={18}/> Stop camera</button>}
-        <small>Keep this page open with the phone positioned behind the person. The rear phone camera is reserved for the back of the head, nape, rear hairline, and rear sides. Clip-E continues receiving JPEG snapshots through the existing secure camera API.</small>
+        <small>Keep this page open with the phone positioned behind the person. The rear phone camera is reserved for the back of the head, nape, rear hairline, and rear sides. Clip-E sends the live rear-camera video peer-to-peer with WebRTC. JPEG snapshots continue in parallel as a reliable fallback and for scan capture.</small>
       </section>
     </main>
   </div>
