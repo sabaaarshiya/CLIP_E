@@ -103,9 +103,13 @@ async function extractBoard(boardPath,boardIndex){
       const cropW=Math.max(20,cropRight-cropLeft),cropH=Math.max(20,cropBottom-cropTop);
       const out=path.join(OUT,`style-${String(global).padStart(3,'0')}.webp`);
 
+      const INNER_W=540,INNER_H=675;
+      const PAD_X=Math.floor((CARD_W-INNER_W)/2),PAD_TOP=Math.floor((CARD_H-INNER_H)/2);
+      const PAD_BOTTOM=CARD_H-INNER_H-PAD_TOP;
       await sharp(boardPath,{limitInputPixels:false})
         .extract({left:cropLeft,top:cropTop,width:cropW,height:cropH})
-        .resize({width:CARD_W,height:CARD_H,fit:'contain',position:'centre',background:{r:7,g:31,b:48,alpha:1},withoutEnlargement:false})
+        .resize({width:INNER_W,height:INNER_H,fit:'contain',position:'centre',background:{r:7,g:31,b:48,alpha:1},withoutEnlargement:false})
+        .extend({top:PAD_TOP,bottom:PAD_BOTTOM,left:PAD_X,right:CARD_W-INNER_W-PAD_X,background:{r:7,g:31,b:48,alpha:1}})
         .webp({quality:92,smartSubsample:true})
         .toFile(out);
 
