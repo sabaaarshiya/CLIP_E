@@ -1331,3 +1331,9 @@ main{
 .lgTop{background:#63a7d4}.lgBlend{background:#dfaa75}.lgLower{background:#df7b52}.lgProtect{background:#ff6b75}
 .rearPip .phoneLiveView{height:100%;min-height:0}
 @media(max-width:800px){.approachGrid{grid-template-columns:1fr}.phoneLiveView{min-height:300px}}
+
+.armAssistControls{margin-top:10px;padding-top:10px;border-top:1px solid #24465d}
+.armAssistControls label{display:block;font-size:9px;letter-spacing:.08em;color:#7f9cad}
+.armAssistControls input{width:100%;margin-top:6px;padding:10px 11px;border:1px solid #31536c;border-radius:6px;background:#071f33;color:#eef5f8}
+.armAssistControls .row{margin-top:9px}
+.armAssistControls small{display:block;margin-top:8px;color:#8fa8b8;line-height:1.4}
