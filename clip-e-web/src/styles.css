@@ -1438,3 +1438,69 @@ main{
 .libraryCard:hover{
   transform:none!important;
 }
+
+/* Final card uniformity pass — Styles only */
+.unifiedStyleGrid{
+  align-items:stretch;
+  grid-auto-rows:1fr;
+}
+.unifiedStyleGrid .libraryCard,
+.recommendedCarousel .libraryCard,
+.profileMatchCard{
+  display:flex!important;
+  flex-direction:column!important;
+  height:100%!important;
+  min-height:0!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  border-radius:12px!important;
+  background:#0a2639!important;
+}
+.unifiedStyleGrid .libraryCard:hover,
+.recommendedCarousel .libraryCard:hover,
+.profileMatchCard:hover,
+.unifiedStyleGrid .libraryCard.chosen,
+.recommendedCarousel .libraryCard.chosen{
+  border:0!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
+}
+.libraryCard .hairstyleImage,
+.profileMatchCard .hairstyleImage{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:4/5!important;
+  object-fit:contain!important;
+  object-position:center top!important;
+  flex:0 0 auto!important;
+  background:#081f30!important;
+  border:0!important;
+  outline:0!important;
+  border-radius:0!important;
+}
+.libraryCardCopy,
+.profileMatchCard>div{
+  flex:1 1 auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.libraryCardCopy{
+  min-height:106px!important;
+}
+.libraryCardCopy>b,
+.profileMatchCard b{
+  min-height:1.4em;
+}
+.libraryCardCopy p{
+  min-height:2.8em!important;
+}
+.libraryCardCopy>span{
+  margin-top:auto!important;
+}
+.recommendedCarousel{
+  align-items:stretch;
+}
+.recommendedCarousel .libraryCard{
+  min-width:200px!important;
+  width:200px!important;
+}
