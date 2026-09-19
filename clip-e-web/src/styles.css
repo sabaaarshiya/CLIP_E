@@ -1215,3 +1215,35 @@ main{
   aspect-ratio:1/1.08!important;
   min-height:0!important;
 }
+
+/* Professional hairstyle cards: portrait only, no embedded source-card chrome */
+.unifiedStyleGrid .libraryCard .hairCrop,
+.recommendedCarousel .libraryCard .hairCrop,
+.profileMatchCard .hairCrop,
+.referencePreview .hairCrop{
+  background-color:#0a2639!important;
+  background-image:var(--board-image)!important;
+  background-size:var(--crop-size-x) var(--crop-size-y)!important;
+  background-position:var(--crop-x) var(--crop-y)!important;
+  background-repeat:no-repeat!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  margin:0!important;
+  transform:none!important;
+}
+.unifiedStyleGrid .libraryCard .hairCrop,
+.recommendedCarousel .libraryCard .hairCrop,
+.profileMatchCard .hairCrop{
+  aspect-ratio:4/5!important;
+  width:100%!important;
+  height:auto!important;
+}
+.libraryCard{
+  background:#0a2639!important;
+}
+.libraryCard .libraryCardCopy{
+  background:#0a2639!important;
+  border-top:0!important;
+}
