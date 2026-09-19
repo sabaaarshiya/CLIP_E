@@ -383,3 +383,21 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 .hairSlot>b{position:relative!important;z-index:3!important;background:#0a2639!important;display:block!important;padding:10px 8px 9px!important;text-align:center!important;font-size:9px!important;line-height:1.1!important;color:#e6f5fb!important}
 .hairSlot>small{display:none!important}
 .hairSlots{gap:10px!important}
+
+/* HEADS ONLY — aggressively crop source labels/card chrome and center every portrait */
+.hairSlot{height:172px!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;background:#0a2639!important}
+.hairCrop{height:138px!important;width:100%!important;flex:0 0 138px!important;transform:none!important;clip-path:none!important;margin:0!important;border-radius:7px 7px 0 0!important;background-size:1080% 480%!important;background-color:#132b3a!important}
+.hairSlot:nth-child(9n+1) .hairCrop{background-position-x:0% !important}
+.hairSlot:nth-child(9n+2) .hairCrop{background-position-x:12.5% !important}
+.hairSlot:nth-child(9n+3) .hairCrop{background-position-x:25% !important}
+.hairSlot:nth-child(9n+4) .hairCrop{background-position-x:37.5% !important}
+.hairSlot:nth-child(9n+5) .hairCrop{background-position-x:50% !important}
+.hairSlot:nth-child(9n+6) .hairCrop{background-position-x:62.5% !important}
+.hairSlot:nth-child(9n+7) .hairCrop{background-position-x:75% !important}
+.hairSlot:nth-child(9n+8) .hairCrop{background-position-x:87.5% !important}
+.hairSlot:nth-child(9n) .hairCrop{background-position-x:100% !important}
+.styleGender:has(button:first-child.active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:1% !important}
+.styleGender:has(button:first-child.active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:34.5% !important}
+.styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(-n+9) .hairCrop{background-position-y:67.5% !important}
+.styleGender:has(button:nth-child(2).active)+.hairSlots .hairSlot:nth-child(n+10) .hairCrop{background-position-y:100% !important}
+.hairSlot>b{height:34px!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:7px 5px!important;background:#0a2639!important}
