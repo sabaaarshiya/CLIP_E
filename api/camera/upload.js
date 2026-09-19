@@ -31,11 +31,8 @@ export default async function handler(req, res) {
 
     const started = Date.now();
 
-    // On Vercel, @vercel/blob authenticates through the project's connected
-    // Blob store using Vercel-managed credentials/OIDC. No long-lived
-    // BLOB_READ_WRITE_TOKEN is required in application code.
     const blob = await put(`trimsync/${device}/latest.jpg`, jpeg, {
-      access: 'public',
+      access: 'private',
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: 'image/jpeg',
