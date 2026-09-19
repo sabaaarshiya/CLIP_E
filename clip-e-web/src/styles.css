@@ -1191,3 +1191,27 @@ main{
   aspect-ratio:1/1.04!important;
   background-color:#0b2a3d!important;
 }
+
+/* Normalize hairstyle portrait presentation */
+.unifiedStyleGrid .libraryCard .hairCrop,
+.recommendedCarousel .libraryCard .hairCrop,
+.profileMatchCard .hairCrop,
+.referencePreview .hairCrop,
+.clipEWorkspace .styleSummary .hairCrop{
+  background-color:#0b2a3d!important;
+  border:none!important;
+  outline:none!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  background-repeat:no-repeat!important;
+  background-position:var(--crop-x) var(--crop-y)!important;
+  background-size:var(--crop-size-x) var(--crop-size-y)!important;
+}
+.unifiedStyleGrid .libraryCard .hairCrop,
+.recommendedCarousel .libraryCard .hairCrop,
+.profileMatchCard .hairCrop{
+  display:block!important;
+  width:100%!important;
+  aspect-ratio:1/1.08!important;
+  min-height:0!important;
+}
