@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/extract-styles.mjs && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
