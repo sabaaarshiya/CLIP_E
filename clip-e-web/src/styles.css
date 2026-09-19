@@ -471,3 +471,9 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 .simpleScanCircle{width:220px!important;height:220px!important;border:2px solid #55cfee!important;border-radius:50%!important}
 .cameraScanner:not(:has(video)):not(:has(>img)) .poseGuide{display:none!important}
 .cameraScanner:not(:has(video)):not(:has(>img))>small{display:none!important}
+
+/* No graphic over the live webcam. Camera image stays completely clear. */
+.cameraScanner .faceGuide,.cameraScanner .scanDots,.cameraScanner .simpleScanCircle{display:none!important}
+.cameraScanner video{position:relative;z-index:1}
+.cameraScanner .poseGuide{z-index:4}
+.cameraScanner>small{z-index:4}
