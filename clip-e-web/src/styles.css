@@ -1093,3 +1093,58 @@ main{
   width:100%!important;
   aspect-ratio:auto!important;
 }
+
+/* Master continuous-session refinement */
+.stageShell{animation:stageReveal .32s ease both}
+@keyframes stageReveal{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sessionTransition,.styleTransitionOverlay{animation:softFade .28s ease both}
+@keyframes softFade{from{opacity:0}to{opacity:1}}
+.sessionTransition{position:fixed;inset:0;z-index:95;background:#04111ce8;backdrop-filter:blur(14px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center}
+.sessionTransition svg{width:34px;height:34px;color:#57ccea}
+.sessionTransition b{font-size:18px;letter-spacing:.12em}
+.sessionTransition span{font-size:9px;color:#86aabd}
+.flowNav .flowNode,.flowNav .flowLabel,.verticalProgress span{transition:all .32s ease}
+
+.visionSystem{display:grid;gap:7px;margin:12px 0;padding:12px;border:1px solid #31586d;border-radius:10px;background:#081f30}
+.visionSystem>div{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:7px;border-top:1px solid #24485b}
+.visionSystem b{font-size:8px;letter-spacing:.06em;color:#d9eaf1}.visionSystem em{font-style:normal;font-size:8px}
+.visionSystem em.ok{color:#64d9bb}.visionSystem em.working{color:#57ccea}.visionSystem em.wait{color:#7897a8}
+.visionSystem.compact{margin-top:14px}
+
+.growthPanel{max-width:1180px;margin:0 auto;width:100%;background:#0b2a3d;border:1px solid #31586d;border-radius:14px;padding:22px}
+.growthPanel h2{font-size:26px;margin:5px 0 10px}.growthPanel>div>p{color:#8faebc;line-height:1.5}
+.growthFacts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.growthFacts article{background:#081f30;border:1px solid #31586d;border-radius:9px;padding:11px;display:grid;gap:5px}
+.growthFacts small{font-size:7px;letter-spacing:.09em;color:#7199ad}.growthFacts b{font-size:10px;line-height:1.35}
+
+.clipEWorkspace{max-width:1240px;margin:0 auto}
+.clipEPhaseNav{position:sticky;top:82px;z-index:28;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#31586d;border:1px solid #31586d;border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:0 12px 40px #0005}
+.clipEPhaseNav button{min-height:58px;background:#081f30;border:0;color:#7599ac;display:flex;align-items:center;justify-content:center;gap:8px;font-size:9px;letter-spacing:.1em;transition:.28s ease}
+.clipEPhaseNav button span{width:24px;height:24px;border:1px solid #31586d;border-radius:50%;display:grid;place-items:center;font-size:7px}
+.clipEPhaseNav button.active{background:#10354b;color:white;box-shadow:inset 0 -3px #ff7a32}
+.clipEPhaseNav button.active span{background:#ff7a32;border-color:#ff7a32;color:#071a27}
+.clipEPhaseNav button.complete span{border-color:#57ccea;color:#57ccea}
+.clipEPhaseBody{min-height:620px}
+.clipEUnifiedGrid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.75fr);gap:14px;animation:workspaceMorph .32s ease both}
+@keyframes workspaceMorph{from{opacity:.15;transform:translateY(7px)}to{opacity:1;transform:none}}
+.clipEUnifiedGrid>.dashPanel{margin:0}
+.phaseCalibrate .setupCamera,.phaseAssist .voicePanel,.phaseVerify .resultCompare{grid-column:1/2}
+.phaseCalibrate .setupChecklist,.phaseAssist .sessionSafety,.phaseVerify .feedbackPanel{grid-column:2/3}
+.phaseCalibrate .phaseActions,.phaseAssist .phaseActions,.phaseVerify .phaseActions{grid-column:1/-1}
+.phaseActions{display:flex;justify-content:space-between;gap:10px;padding:12px 0}
+.phasePlan .details{align-self:start}
+.phaseAssist .clipSpeaks{grid-column:2/3}
+.phaseVerify .sessionSummary{grid-column:2/3}
+.phaseVerify .resultCompare{grid-row:1/3}
+.phaseVerify .feedbackPanel{grid-row:1/2}
+.phaseVerify .sessionSummary{grid-row:2/3}
+
+@media(max-width:980px){
+ .growthFacts{grid-template-columns:repeat(2,1fr)}
+ .clipEUnifiedGrid{grid-template-columns:1fr}
+ .phaseCalibrate .setupCamera,.phaseAssist .voicePanel,.phaseVerify .resultCompare,.phaseCalibrate .setupChecklist,.phaseAssist .sessionSafety,.phaseVerify .feedbackPanel,.phaseAssist .clipSpeaks,.phaseVerify .sessionSummary,.phaseActions{grid-column:1!important;grid-row:auto!important}
+}
+@media(max-width:620px){
+ .clipEPhaseNav{grid-template-columns:repeat(2,1fr);position:relative;top:auto}
+ .growthFacts{grid-template-columns:1fr}
+}
