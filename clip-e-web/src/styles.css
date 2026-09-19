@@ -1148,3 +1148,46 @@ main{
  .clipEPhaseNav{grid-template-columns:repeat(2,1fr);position:relative;top:auto}
  .growthFacts{grid-template-columns:1fr}
 }
+
+/* Final hairstyle portrait treatment: crop out source-board frame/labels and center the head */
+.stylesExperience .hairCrop,
+.profileStyleMatches .hairCrop,
+.stylePreviewPanel .hairCrop,
+.clipEWorkspace .styleSummary .hairCrop{
+  background-image:var(--board-image)!important;
+  background-size:var(--crop-size-x) var(--crop-size-y)!important;
+  background-position:var(--crop-x) var(--crop-y)!important;
+  background-repeat:no-repeat!important;
+  background-color:#0b2a3d!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  transform:none!important;
+  clip-path:none!important;
+  margin:0!important;
+}
+.unifiedStyleGrid .libraryCard,
+.recommendedCarousel .libraryCard,
+.profileMatchCard{
+  overflow:hidden!important;
+}
+.unifiedStyleGrid .libraryCard .hairCrop,
+.recommendedCarousel .libraryCard .hairCrop,
+.profileMatchCard .hairCrop{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1/1.04!important;
+}
+.libraryCard .hairCrop:before,
+.libraryCard .hairCrop:after,
+.profileMatchCard .hairCrop:before,
+.profileMatchCard .hairCrop:after{
+  display:none!important;
+}
+.referencePreview .hairCrop{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1/1.04!important;
+  background-color:#0b2a3d!important;
+}
