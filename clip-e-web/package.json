@@ -11,8 +11,7 @@
     "react-dom": "latest",
     "lucide-react": "^0.468.0",
     "@mediapipe/tasks-vision": "latest",
-    "@supabase/supabase-js": "latest",
-    "@smartspectra/node-sdk": "latest"
+    "@supabase/supabase-js": "latest"
   },
   "devDependencies": {}
 }
