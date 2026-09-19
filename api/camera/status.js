@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const db = getDb();
 
     const q = await db.query(
-      `select frame_seq, time, image_url
+      `select frame_seq, time, image_url, payload
        from camera_telemetry
        where device_id = $1
        order by time desc
@@ -30,6 +30,8 @@ export default async function handler(req, res) {
       frame_seq: Number(latest.frame_seq || 0),
       latest_frame_at: latest.time,
       image_url: latest.image_url || null,
+      role: latest.payload?.role || (device === 'phone-back-01' ? 'back_head' : 'front_side_workspace'),
+      session_id: latest.payload?.session_id || null,
     });
   } catch (e) {
     console.error('camera status failed', e);
