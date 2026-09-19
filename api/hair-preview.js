@@ -1,24 +1,32 @@
 import { GoogleGenAI } from '@google/genai';
+import sharp from 'sharp';
 
 const MODEL='gemini-3.1-flash-image';
 
-function detectMime(buf){
-  if(buf.length>=3&&buf[0]===0xff&&buf[1]===0xd8&&buf[2]===0xff)return'image/jpeg';
-  if(buf.length>=8&&buf[0]===0x89&&buf[1]===0x50&&buf[2]===0x4e&&buf[3]===0x47)return'image/png';
-  if(buf.length>=12&&buf.toString('ascii',0,4)==='RIFF'&&buf.toString('ascii',8,12)==='WEBP')return'image/webp';
-  return null;
-}
-
-function parseImageDataUrl(value,label){
+function parseDataUrl(value,label){
   const m=/^data:(image\/(?:png|jpeg|webp));base64,(.+)$/s.exec(value||'');
   if(!m)throw Object.assign(new Error(`${label} is not a supported image data URL`),{code:'INVALID_DATA_URL'});
   const cleaned=m[2].replace(/\s/g,'');
-  let bytes;
-  try{bytes=Buffer.from(cleaned,'base64')}catch{throw Object.assign(new Error(`${label} base64 could not be decoded`),{code:'INVALID_BASE64'})}
-  if(!bytes||bytes.length<128)throw Object.assign(new Error(`${label} image payload is empty or too small`),{code:'EMPTY_IMAGE'});
-  const detected=detectMime(bytes);
-  if(!detected)throw Object.assign(new Error(`${label} bytes are not a valid JPEG, PNG, or WebP image`),{code:'BAD_IMAGE_BYTES'});
-  return{mime:detected,data:bytes.toString('base64'),bytes:bytes.length,declared:m[1]};
+  const bytes=Buffer.from(cleaned,'base64');
+  if(!bytes?.length)throw Object.assign(new Error(`${label} could not be decoded from base64`),{code:'INVALID_BASE64'});
+  return bytes;
+}
+
+async function normalizeForGemini(bytes,label){
+  try{
+    const image=sharp(bytes,{failOn:'error'});
+    const meta=await image.metadata();
+    if(!meta.width||!meta.height)throw new Error('missing dimensions');
+    const out=await image
+      .rotate()
+      .resize({width:1536,height:1536,fit:'inside',withoutEnlargement:true})
+      .flatten({background:'#ffffff'})
+      .jpeg({quality:90,chromaSubsampling:'4:4:4'})
+      .toBuffer();
+    return{mime:'image/jpeg',data:out.toString('base64'),bytes:out.length,width:meta.width,height:meta.height};
+  }catch(err){
+    throw Object.assign(new Error(`${label} could not be decoded before sending to Gemini: ${err.message}`),{code:'SERVER_IMAGE_DECODE_FAILED'});
+  }
 }
 
 function findOutputImage(interaction){
@@ -38,42 +46,28 @@ export default async function handler(req,res){
   if(!process.env.GEMINI_API_KEY)return res.status(503).json({error:'GEMINI_API_KEY is not configured',code:'NO_API_KEY'});
 
   const started=Date.now();
+
   try{
     const {baseImage,style,referenceImage,settings={}}=req.body||{};
-    const source=parseImageDataUrl(baseImage,'Source photo');
-    const reference=referenceImage?parseImageDataUrl(referenceImage,'Hairstyle reference'):null;
 
-    const prompt=`Edit the FIRST image only. Keep the person's identity, face, skin tone, facial expression, body, clothing, pose, camera angle, lighting, and background unchanged. Change only the hair so it realistically matches the hairstyle shown in the SECOND image. This is a virtual hairstyle try-on, similar to a professional salon preview. Preserve the person's natural hairline and head shape, adapt the selected haircut naturally to their head, and make the result photorealistic. Selected hairstyle: ${style||'selected hairstyle'}. Requested settings: top length ${settings.topLength??'default'} mm, side length ${settings.sideLength??'default'} mm, fade height ${settings.fadeHeight??'default'}, texture ${settings.texture??'default'}, finish ${settings.finish??'default'}.`;
+    const source=await normalizeForGemini(parseDataUrl(baseImage,'Source photo'),'Source photo');
+    const reference=referenceImage
+      ? await normalizeForGemini(parseDataUrl(referenceImage,'Hairstyle reference'),'Hairstyle reference')
+      : null;
+
+    const prompt=`Create a photorealistic virtual hairstyle try-on using the FIRST image as the person to preserve and the SECOND image only as the hairstyle reference. Keep the person's identity, face, facial features, skin tone, expression, body, clothing, pose, camera angle, lighting, and background unchanged. Change only the hair. Recreate the hairstyle from the reference image naturally on the source person's head, preserving the source person's head shape and natural hairline. Selected hairstyle: ${style||'selected hairstyle'}. Settings: top length ${settings.topLength??'default'} mm, side length ${settings.sideLength??'default'} mm, fade height ${settings.fadeHeight??'default'}, texture ${settings.texture??'default'}, finish ${settings.finish??'default'}.`;
 
     const input=[
+      {type:'text',text:prompt},
       {type:'image',mime_type:source.mime,data:source.data},
-      ...(reference?[{type:'image',mime_type:reference.mime,data:reference.data}]:[]),
-      {type:'text',text:prompt}
+      ...(reference?[{type:'image',mime_type:reference.mime,data:reference.data}]:[])
     ];
 
     const ai=new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY});
-    let interaction;
-    let fallback=null;
-    try{
-      interaction=await ai.interactions.create({
-        model:MODEL,
-        input,
-        response_format:{type:'image',mime_type:'image/jpeg'}
-      });
-    }catch(firstError){
-      const msg=String(firstError?.message||'');
-      if(reference&&/decod|image|invalid/i.test(msg)){
-        fallback='text-only-style-reference';
-        interaction=await ai.interactions.create({
-          model:MODEL,
-          input:[
-            {type:'image',mime_type:source.mime,data:source.data},
-            {type:'text',text:prompt+' The visual reference could not be used, so reproduce the named hairstyle from the written description while preserving the source person exactly.'}
-          ],
-          response_format:{type:'image',mime_type:'image/jpeg'}
-        });
-      }else throw firstError;
-    }
+    const interaction=await ai.interactions.create({
+      model:MODEL,
+      input
+    });
 
     const image=findOutputImage(interaction);
     if(!image?.data){
@@ -82,8 +76,15 @@ export default async function handler(req,res){
     }
 
     return res.status(200).json({
-      image:`data:${image.mime_type||'image/jpeg'};base64,${image.data}`,
-      meta:{model:MODEL,sourceBytes:source.bytes,referenceBytes:reference?.bytes||0,durationMs:Date.now()-started,fallback}
+      image:`data:${image.mime_type||'image/png'};base64,${image.data}`,
+      meta:{
+        model:MODEL,
+        sourceBytes:source.bytes,
+        referenceBytes:reference?.bytes||0,
+        sourceSize:`${source.width}x${source.height}`,
+        referenceSize:reference?`${reference.width}x${reference.height}`:null,
+        durationMs:Date.now()-started
+      }
     });
   }catch(e){
     const status=Number(e?.status)===429||Number(e?.code)===429?429:500;
