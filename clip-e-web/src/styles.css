@@ -530,3 +530,5 @@ p{color:#b5c4cc;line-height:1.6}
 .discoverWhy h3{font-size:25px!important;margin:16px 0 10px}
 .discoverWhy p{font-size:12px!important;color:#9eb1bb!important}
 @media(max-width:850px){.discoverHero{gap:24px}.discoverCopy h2{font-size:48px!important}.robotSpec{position:relative;left:auto;right:auto;bottom:auto;margin:12px}}
+
+.presageStrip{margin-bottom:14px;padding:12px 14px;background:#071923;border-left:2px solid var(--clip-orange,#ff6433);display:grid;grid-template-columns:auto 1fr;gap:3px 14px}.presageStrip span{font-size:8px;letter-spacing:.16em;color:#ff8b63}.presageStrip b{justify-self:end;font-size:8px;letter-spacing:.1em;color:#7fd9ef}.presageStrip p{grid-column:1/-1;margin:3px 0 0;font-size:9px!important;color:#829eac!important}
