@@ -477,3 +477,15 @@ header nav{gap:1px}header nav button{padding:11px 7px;font-size:9px}
 .cameraScanner video{position:relative;z-index:1}
 .cameraScanner .poseGuide{z-index:4}
 .cameraScanner>small{z-index:4}
+
+/* HARD RESET: live camera must be raw webcam + instruction only */
+.cameraScanner:has(video) .faceGuide,
+.cameraScanner:has(video) .scanDots,
+.cameraScanner:has(video) .simpleScanCircle,
+.cameraScanner:has(video) .scanWelcome,
+.cameraScanner:has(video)>small{display:none!important}
+.cameraScanner:has(video) video{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:20!important}
+.cameraScanner:has(video) .poseGuide{position:absolute!important;top:16px!important;left:50%!important;transform:translateX(-50%)!important;z-index:30!important}
+.cameraScanner:has(video) .poseGuide:after{content:none!important}
+.cameraScanner:has(video) .poseChecks{position:relative!important;z-index:31!important}
+.cameraScanner:has(video) .analyzingFace{z-index:40!important}
