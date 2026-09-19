@@ -93,12 +93,13 @@ async function extractBoard(boardPath,boardIndex){
       const left=Math.min(vx[col],vx[col+1]),right=Math.max(vx[col],vx[col+1]);
       const top=Math.min(hy[row],hy[row+1]),bottom=Math.max(hy[row],hy[row+1]);
       const cw=right-left,ch=bottom-top;
-      const insetX=Math.max(3,Math.round(cw*.035)),insetTop=Math.max(3,Math.round(ch*.035));
+      const insetX=Math.max(5,Math.round(cw*.075)),insetTop=Math.max(4,Math.round(ch*.045));
       const divider=innerDividerScore(data,w,h,channels,left,top,right,bottom);
       const cropLeft=Math.max(0,left+insetX);
       const cropTop=Math.max(0,top+insetTop);
       const cropRight=Math.min(w,right-insetX);
-      const cropBottom=Math.max(cropTop+20,Math.min(bottom-Math.round(ch*.04),divider-Math.round(ch*.018)));
+      const portraitLimit=Math.round(top+ch*.735);
+      const cropBottom=Math.max(cropTop+20,Math.min(portraitLimit,divider-Math.round(ch*.055)));
       const cropW=Math.max(20,cropRight-cropLeft),cropH=Math.max(20,cropBottom-cropTop);
       const out=path.join(OUT,`style-${String(global).padStart(3,'0')}.webp`);
 
