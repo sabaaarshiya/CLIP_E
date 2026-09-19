@@ -123,15 +123,20 @@ export default function PhoneCamera(){
     return()=>{if(timerRef.current)clearInterval(timerRef.current)}
   },[running,fps,token,expiresAt]);
 
-  useEffect(()=>()=>stop(),[]);
+  useEffect(()=>{
+    // Try immediately so Android/Chrome can show the permission prompt on page load.
+    // Browsers that require a user gesture simply fall back to the large START button.
+    const t=setTimeout(()=>{if(!streamRef.current)start()},250);
+    return()=>{clearTimeout(t);stop()};
+  },[]);
 
   return <div className="phoneCamPage">
-    <header className="phoneCamHeader"><div><b>CLIP-E</b><span>DEDICATED BACK-OF-HEAD CAMERA</span></div><span className={running?'phoneLive':'phoneIdle'}>{running?<Wifi size={15}/>:<WifiOff size={15}/>} {running?'LIVE':'OFFLINE'}</span></header>
+    <header className="phoneCamHeader"><div><b>CLIP-E</b><span>FIXED REAR WORKSPACE CAMERA</span></div><span className={running?'phoneLive':'phoneIdle'}>{running?<Wifi size={15}/>:<WifiOff size={15}/>} {running?'LIVE':'OFFLINE'}</span></header>
     <main className="phoneCamMain">
       <section className="phoneCamStage">
         <video ref={videoRef} autoPlay playsInline muted/>
         <canvas ref={canvasRef} hidden/>
-        <div className="backGuide"><div className="headGuide"/><b>Center the BACK of the head</b><span>Keep the nape, rear hairline, and both ears visible</span></div>
+        <div className="backGuide"><div className="headGuide"/><b>Frame HEAD + CLIPPER together</b><span>Mount the phone behind the arm. Keep the crown, nape, both ears, and clipper/tool tip visible in the same frame.</span></div>
       </section>
       <section className="phoneCamControls">
         <div><span>SESSION</span><b>{session}</b></div>
@@ -139,7 +144,7 @@ export default function PhoneCamera(){
         <input type="range" min="1" max="5" value={fps} onChange={e=>setFps(Number(e.target.value))}/>
         <p>{status}</p>
         {!running?<button className="primary big" onClick={start}><Camera size={18}/> Start rear camera</button>:<button className="ghost big" onClick={stop}><RefreshCw size={18}/> Stop camera</button>}
-        <small>Keep this page open with the phone positioned behind the person. The rear phone camera is reserved for the back of the head, nape, rear hairline, and rear sides. Clip-E sends the live rear-camera video peer-to-peer with WebRTC. JPEG snapshots continue in parallel as a reliable fallback and for scan capture.</small>
+        <div className="phoneMountChecklist"><b>Mount once, then leave it fixed</b><span>1. Place the phone behind and slightly above the arm.</span><span>2. Aim toward the back of the head.</span><span>3. Keep the clipper/tool tip visible in the same frame.</span><span>4. Do not move the phone during the assisted session.</span></div><small>This fixed view is used for the rear head map and operator-guided approach. WebRTC carries the live video; JPEG snapshots continue in parallel for scan capture and fallback.</small>
       </section>
     </main>
   </div>
