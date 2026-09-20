@@ -2386,3 +2386,7 @@ main{
   line-height:1.45;
 }
 .uploadOrderHint b{color:#b9d0dc}
+
+
+.demoScanBtn{margin-top:9px}
+.demoScanHint{margin-top:6px;color:#7798aa;font-size:8px;line-height:1.4}
