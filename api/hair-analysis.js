@@ -114,7 +114,11 @@ function localFallbackProfile(faceGeometry){
 
 export default async function handler(req,res){
   if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
-  if(!process.env.GEMINI_API_KEY)return res.status(503).json({error:'GEMINI_API_KEY is not configured'});
+  const GEMINI_KEYS=[...new Set([
+    process.env.GEMINI_API_KEY,
+    process.env.GEMINI_API_KEY_2
+  ].filter(Boolean))];
+  if(!GEMINI_KEYS.length)return res.status(503).json({error:'No Gemini API key is configured'});
   try{
     const {images=[],viewLabels=[],faceGeometry=null}=req.body||{};
     const usable=(images||[]).slice(0,4);
@@ -139,31 +143,47 @@ Use that geometry as quantitative support for faceProfile. Do not randomly assig
 
 The result will drive a deterministic hairstyle-matching system across Clip-E's existing 100 styles, so make styleSignals useful but conservative and evidence-based.`});
 
-    let g=null,out=null,lastMessage='',usedModel='';
+    let g=null,out=null,lastMessage='',usedModel='',usedKeySlot=0;
     const failures=[];
     outer:
-    for(const model of MODEL_CANDIDATES){
-      for(let attempt=0;attempt<2;attempt++){
-        g=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY)}`,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({
-            contents:[{role:'user',parts}],
-            generationConfig:{
-              responseMimeType:'application/json',
-              responseSchema:schema
-            }
-          })
-        });
-        out=await g.json().catch(()=>({}));
-        if(g.ok){usedModel=model;break outer}
-        lastMessage=out?.error?.message||`Gemini profile analysis failed with status ${g.status}`;
-        failures.push({model,status:g.status,message:lastMessage});
-        // Invalid/unsupported model: move to the next candidate immediately.
-        if([400,404].includes(g.status))break;
-        // Quota/server errors: one short retry, then try another model.
-        if(![429,500,502,503,504].includes(g.status))break;
-        if(attempt===0)await new Promise(resolve=>setTimeout(resolve,450));
+    for(let keyIndex=0;keyIndex<GEMINI_KEYS.length;keyIndex++){
+      const apiKey=GEMINI_KEYS[keyIndex];
+      for(const model of MODEL_CANDIDATES){
+        for(let attempt=0;attempt<2;attempt++){
+          g=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+              contents:[{role:'user',parts}],
+              generationConfig:{
+                responseMimeType:'application/json',
+                responseSchema:schema
+              }
+            })
+          });
+          out=await g.json().catch(()=>({}));
+          if(g.ok){
+            usedModel=model;
+            usedKeySlot=keyIndex+1;
+            break outer;
+          }
+
+          lastMessage=out?.error?.message||`Gemini profile analysis failed with status ${g.status}`;
+          failures.push({keySlot:keyIndex+1,model,status:g.status,message:lastMessage});
+
+          // Bad/unsupported model: try next model on the same key.
+          if([400,404].includes(g.status))break;
+
+          // Auth/permission issue: stop using this key and move to the next key.
+          if([401,403].includes(g.status))break;
+
+          // Quota/server errors: retry once, then continue through models/keys.
+          if(![429,500,502,503,504].includes(g.status))break;
+          if(attempt===0)await new Promise(resolve=>setTimeout(resolve,450));
+        }
+
+        // If this key itself is unauthorized/forbidden, skip its remaining models.
+        if([401,403].includes(g?.status))break;
       }
     }
 
@@ -178,7 +198,7 @@ The result will drive a deterministic hairstyle-matching system across Clip-E's 
           fallbackReason:'Gemini quota unavailable',
           viewsUsed:4,
           viewLabels:['Front','Left','Right','Back'],
-          geminiFailures:failures.map(f=>({model:f.model,status:f.status}))
+          geminiFailures:failures.map(f=>({keySlot:f.keySlot,model:f.model,status:f.status}))
         });
       }
       throw new Error(lastMessage||'Gemini profile analysis request failed');
@@ -188,7 +208,7 @@ The result will drive a deterministic hairstyle-matching system across Clip-E's 
     if(!raw)throw new Error('Gemini returned no hair analysis');
     let parsed;
     try{parsed=JSON.parse(raw)}catch{throw new Error('Gemini returned invalid structured hair-analysis JSON')}
-    return res.status(200).json({analysis:parsed,model:usedModel,viewsUsed:4,viewLabels:['Front','Left','Right','Back']});
+    return res.status(200).json({analysis:parsed,model:usedModel,keySlot:usedKeySlot,viewsUsed:4,viewLabels:['Front','Left','Right','Back']});
   }catch(e){
     console.error('Clip-E hair analysis error',e);
     const message=e?.message||'Profile analysis failed';
