@@ -2306,3 +2306,73 @@ main{
 @keyframes clipAnalysisPulse{0%,100%{opacity:.45;transform:scale(.92)}50%{opacity:1;transform:scale(1)}}
 @media(max-width:900px){.scanAnalysisSteps{grid-template-columns:1fr 1fr}.profileMatchRow.topThree{grid-template-columns:1fr}}
 @media(max-width:620px){.scanAnalysisSteps{grid-template-columns:1fr}}
+
+
+/* Captured scan images in Scan workspace */
+.scanPhotoRail{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:42px;
+  z-index:9;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  pointer-events:none;
+}
+.scanPhotoSlot{
+  min-width:0;
+  height:78px;
+  border:1px solid #315b72;
+  border-radius:6px;
+  overflow:hidden;
+  background:#081f31d9;
+  backdrop-filter:blur(4px);
+  display:grid;
+  grid-template-rows:1fr auto;
+}
+.scanPhotoSlot.current{border-color:#4bb8de;box-shadow:0 0 0 1px #4bb8de33}
+.scanPhotoSlot.filled{border-color:#2c7b6b}
+.scanPhotoSlot img{width:100%;height:54px;object-fit:cover;display:block}
+.scanPhotoSlot>span{display:grid;place-items:center;color:#587c90}
+.scanPhotoSlot b{display:block;padding:4px 6px;background:#061b2ae8;color:#91acbc;font-size:8px;letter-spacing:.04em;text-align:center}
+.scanPhotoSlot.filled b{color:#68dab8}
+.completedScanBoard{
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:repeat(2,minmax(0,1fr));
+  gap:2px;
+  background:#071b29;
+}
+.completedScanBoard figure{
+  position:relative;
+  margin:0;
+  overflow:hidden;
+  background:#0a2639;
+}
+.completedScanBoard img{width:100%;height:100%;object-fit:cover;display:block}
+.completedScanBoard figcaption{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 8px;
+  border:1px solid #2f7167;
+  border-radius:5px;
+  background:#061d2be8;
+  color:#69d9b8;
+  font-size:9px;
+}
+.latestScanPhoto{width:100%;height:100%;object-fit:cover;display:block}
+.cameraScanner:has(.completedScanBoard) .poseGuide,
+.cameraScanner:has(.completedScanBoard) .scanPhotoRail{display:none}
+@media(max-width:700px){
+  .scanPhotoRail{left:10px;right:10px;bottom:38px;gap:4px}
+  .scanPhotoSlot{height:62px}
+  .scanPhotoSlot img{height:40px}
+  .completedScanBoard{grid-template-columns:1fr 1fr}
+}
