@@ -2399,60 +2399,41 @@ main{
   isolation:isolate;
 }
 
+.armLandingVisual{
+  position:relative!important;
+  min-height:520px;
+  padding:0!important;
+  border-radius:18px!important;
+  overflow:hidden!important;
+  background:#081f30!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
 .discoverHeroRepoImage{
   width:100%!important;
   height:100%!important;
   min-height:520px!important;
   object-fit:contain!important;
   object-position:center center!important;
-  background:#081f30;
   display:block;
-  transform:scale(1.04);
-  transform-origin:center center;
+  background:#081f30;
+  transform:none!important;
 }
 
-/* Hide only the words baked into the source artwork.
-   These masks avoid covering the robot itself. */
 .armLandingVisual::before,
 .armLandingVisual::after{
-  content:"";
-  position:absolute;
-  z-index:3;
-  pointer-events:none;
-  background:linear-gradient(90deg,#081f30 0%,#0a293c 70%,rgba(8,31,48,0) 100%);
-}
-
-.armLandingVisual::before{
-  left:6%;
-  top:11%;
-  width:27%;
-  height:26%;
-  border-radius:14px;
-}
-
-.armLandingVisual::after{
-  right:0;
-  top:25%;
-  width:23%;
-  height:47%;
-  border-radius:14px 0 0 14px;
-  background:linear-gradient(270deg,#081f30 0%,#0a293c 72%,rgba(8,31,48,0) 100%);
+  display:none!important;
+  content:none!important;
 }
 
 @media(max-width:1000px){
+  .armLandingVisual,
   .discoverHeroRepoImage{
     min-height:420px!important;
-    transform:scale(1.02);
-  }
-  .armLandingVisual::before{
-    left:4%;
-    width:29%;
-  }
-  .armLandingVisual::after{
-    width:24%;
   }
 }
-
 
 .fallbackRetryBanner{
   display:flex;
