@@ -2412,3 +2412,37 @@ main{
     transform:scale(1.38);
   }
 }
+
+
+.fallbackRetryBanner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin:0 0 16px;
+  padding:16px 18px;
+  border:1px solid #b9684f;
+  border-radius:8px;
+  background:#3a2522;
+}
+.fallbackRetryBanner h3{
+  margin:4px 0 5px;
+  color:#fff;
+  font-size:16px;
+}
+.fallbackRetryBanner p{
+  margin:0;
+  max-width:760px;
+  color:#dcb9ab;
+  font-size:10px;
+  line-height:1.5;
+}
+.fallbackRetryBanner .primary{
+  width:auto;
+  min-width:180px;
+  flex:0 0 auto;
+}
+@media(max-width:760px){
+  .fallbackRetryBanner{align-items:stretch;flex-direction:column}
+  .fallbackRetryBanner .primary{width:100%}
+}
