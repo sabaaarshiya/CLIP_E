@@ -1,5 +1,6 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {Camera,Wifi,Target} from 'lucide-react';
+import {Camera,Wifi} from 'lucide-react';
+import LiveHeadAR from './LiveHeadAR.jsx';
 
 const rtcConfig={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
 
@@ -26,6 +27,7 @@ export default function PhoneLiveView({
   const pcRef=useRef(null);
   const [state,setState]=useState('connecting');
   const [usingWebRTC,setUsingWebRTC]=useState(false);
+  const [liveStream,setLiveStream]=useState(null);
 
   useEffect(()=>{
     let cancelled=false,timer=null,lastOffer='';
@@ -45,10 +47,8 @@ export default function PhoneLiveView({
         pc.ontrack=e=>{
           if(cancelled)return;
           const stream=e.streams?.[0]||new MediaStream([e.track]);
-          if(videoRef.current){
-            videoRef.current.srcObject=stream;
-            videoRef.current.play().catch(()=>{});
-          }
+          setLiveStream(stream);
+          if(videoRef.current){videoRef.current.srcObject=stream;videoRef.current.play().catch(()=>{})}
           setUsingWebRTC(true);
           setState('live');
         };
@@ -56,7 +56,7 @@ export default function PhoneLiveView({
           if(cancelled)return;
           if(pc.connectionState==='connected'){setUsingWebRTC(true);setState('live')}
           if(['failed','disconnected','closed'].includes(pc.connectionState)){
-            setUsingWebRTC(false);setState('fallback')
+            setUsingWebRTC(false);setLiveStream(null);setState('fallback')
           }
         };
 
@@ -80,20 +80,13 @@ export default function PhoneLiveView({
     return()=>{cancelled=true;clearInterval(timer);pcRef.current?.close();pcRef.current=null};
   },[session]);
 
-  const blendMax=Math.max(sideLength+8,Math.round(topLength*.7));
   return <div className={'phoneLiveView '+(compact?'compact ':'')+(usingWebRTC?'webrtc':'fallback')}>
-    <video ref={videoRef} autoPlay playsInline muted className={usingWebRTC?'visible':''}/>
-    {!usingWebRTC&&fallbackSrc&&<img src={fallbackSrc} alt="Rear phone camera fallback"/>}
+    <video ref={videoRef} autoPlay playsInline muted className="phoneRtcProbe"/>
+    {showMap&&usingWebRTC&&liveStream?<LiveHeadAR stream={liveStream} topLength={topLength} sideLength={sideLength} fadeHeight={fadeHeight} rear className="rearHeadAR"/>:null}
+    {showMap&&!usingWebRTC&&fallbackSrc?<LiveHeadAR src={fallbackSrc} topLength={topLength} sideLength={sideLength} fadeHeight={fadeHeight} rear className="rearHeadAR"/>:null}
+    {!showMap&&usingWebRTC&&liveStream?<video autoPlay playsInline muted ref={el=>{if(el&&el.srcObject!==liveStream){el.srcObject=liveStream;el.play().catch(()=>{})}}} className="visible"/>:null}
+    {!showMap&&!usingWebRTC&&fallbackSrc&&<img src={fallbackSrc} alt="Rear phone camera fallback"/>}
     {!usingWebRTC&&!fallbackSrc&&<div className="phoneLiveEmpty"><Camera/><b>Waiting for rear camera</b></div>}
-    {showMap&&<div className={'rearCutMap fade-'+String(fadeHeight).toLowerCase()}>
-      <div className="cutZone crown"><span>CROWN</span><b>{topLength} mm</b></div>
-      <div className="cutZone blend"><span>BLEND BAND</span><b>{sideLength}–{blendMax} mm</b></div>
-      <div className="cutZone lower"><span>LOWER BACK</span><b>{sideLength} mm</b></div>
-      <div className="cutZone nape"><span>NECKLINE</span><b>PROTECTED EDGE</b></div>
-      <div className="earGuard left">NO-CUT</div>
-      <div className="earGuard right">NO-CUT</div>
-      <div className="mapCrosshair"><Target size={18}/></div>
-    </div>}
-    <div className="phoneLiveBadge"><Wifi size={13}/><span>{usingWebRTC?'WEBRTC LIVE':state==='negotiating'?'CONNECTING':'SNAPSHOT FALLBACK'}</span></div>
+    <div className="phoneLiveBadge"><Wifi size={13}/><span>{usingWebRTC?'WEBRTC LIVE · AR':state==='negotiating'?'CONNECTING':'SNAPSHOT AR'}</span></div>
   </div>
 }
