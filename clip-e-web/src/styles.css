@@ -2176,3 +2176,33 @@ main{
   border-color:#a85c39;
   color:#ffd1ba;
 }
+
+
+/* Live head-tracked AR cut mapping */
+.liveHeadAR{position:relative;width:100%;height:100%;min-height:280px;overflow:hidden;background:#041421;border-radius:8px}
+.liveHeadAR>img,.liveHeadAR>video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.arHairMask{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;mix-blend-mode:screen;opacity:.55}
+.headArSvg{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
+.headArSvg path{vector-effect:non-scaling-stroke;transition:opacity .15s ease}
+.arTop{fill:#43d5b72e;stroke:#65e8cd;stroke-width:3}
+.arBlend{fill:#55a9dc2b;stroke:#70c1ef;stroke-width:3}
+.arSide{fill:#ff9c572b;stroke:#ffb176;stroke-width:3}
+.arHairline{fill:none;stroke:#ff705d;stroke-width:4;stroke-dasharray:10 8}
+.arHairline.rearEdge{stroke:#ff6767}
+.arLabel{fill:#fff;font-size:22px;font-weight:800;letter-spacing:1.2px;paint-order:stroke;stroke:#041421;stroke-width:5px;stroke-linejoin:round}
+.arLabelTop{text-anchor:middle;font-size:24px}
+.arLandmark{fill:#6fe6ff;opacity:.55}
+.arHud{position:absolute;left:10px;right:10px;top:10px;z-index:5;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.arHud span{padding:5px 7px;border:1px solid #31566b;border-radius:999px;background:#041725d9;color:#9fb8c5;font-size:7px;letter-spacing:.08em;font-weight:800}
+.arHud .arLive{color:#7ce8c2;border-color:#347561}.arHud .arWaiting{color:#ffc08f;border-color:#725039}
+.arGuide{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;background:radial-gradient(circle at 50% 45%,transparent 0 22%,#04142125 54%,#04142188 100%)}
+.arGuide:before{content:"";width:42%;height:58%;border:1.5px dashed #66d8f1;border-radius:48% 48% 44% 44%;position:absolute}
+.arGuide span,.arGuide small{position:relative;margin-top:210px;padding:4px 8px;background:#041725d9;border-radius:4px}.arGuide span{color:#eef8fb;font-size:10px;font-weight:800}.arGuide small{margin-top:4px;color:#86a7b7;font-size:8px}
+.calibrationComputerAR,.sessionCameraAR,.rearHeadAR{min-height:100%}
+.calibrationFeed>.liveHeadAR{height:100%;min-height:300px}
+.liveHeroCamera>.liveHeadAR{position:absolute;inset:0;height:100%;min-height:0}
+.phoneLiveView>.liveHeadAR{position:absolute;inset:0;height:100%;min-height:0;border:0;border-radius:0}
+.phoneRtcProbe{display:none!important}
+.rearPip .liveHeadAR .arHud{display:none}
+.rearPip .liveHeadAR .arLabel{font-size:18px}
+@media(max-width:700px){.arLabel{font-size:18px}.arLabelTop{font-size:20px}.arHud span:nth-child(n+3){display:none}.arGuide span{margin-top:180px}}
