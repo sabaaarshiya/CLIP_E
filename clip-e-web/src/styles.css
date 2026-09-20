@@ -1266,13 +1266,13 @@ main{
   position:absolute!important;
   top:50%!important;
   left:50%!important;
-  width:108%!important;
-  height:108%!important;
+  width:120%!important;
+  height:120%!important;
   max-width:none!important;
   max-height:none!important;
   object-fit:cover!important;
   object-position:center center!important;
-  transform:translate(-46%,-50%)!important;
+  transform:translate(-50%,-50%)!important;
   display:block!important;
   border-radius:inherit!important;
   margin:0!important;
@@ -1293,10 +1293,10 @@ main{
 
   .discoverHeroRepoImage,
   .armLandingVisual>img{
-    width:106%!important;
-    height:106%!important;
+    width:116%!important;
+    height:116%!important;
     object-position:center center!important;
-    transform:translate(-47%,-50%)!important;
+    transform:translate(-50%,-50%)!important;
   }
 }
 
