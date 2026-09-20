@@ -2268,3 +2268,41 @@ main{
   color:#79b9d3;
   font-size:8px;
 }
+
+
+/* Scan -> Gemini -> Profile workflow */
+.scanAnalysisPanel{
+  margin-top:16px;
+  padding:22px;
+  border:1px solid #315f78;
+  border-radius:8px;
+  background:#102f45;
+}
+.scanAnalysisPanel.ready{border-color:#2d8a78;background:#103a43}
+.scanAnalysisHead{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.scanAnalysisHead h2{margin:5px 0 6px;font-size:24px}
+.scanAnalysisHead p{margin:0;color:#9bb6c5;max-width:700px;line-height:1.55}
+.scanAnalysisHead>svg{width:28px;height:28px;color:#52dcb8;flex:0 0 auto}
+.scanAnalysisPanel:not(.ready) .scanAnalysisHead>svg{color:#61cdea;animation:clipAnalysisPulse 1.25s ease-in-out infinite}
+.scanAnalysisSteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:18px}
+.scanAnalysisSteps>div{display:flex;align-items:center;gap:9px;min-height:46px;padding:10px 12px;border:1px solid #294f66;border-radius:6px;background:#0b283c;color:#799aae}
+.scanAnalysisSteps span{width:24px;height:24px;border:1px solid #416c83;border-radius:50%;display:grid;place-items:center;font-size:8px;font-weight:900;flex:0 0 auto}
+.scanAnalysisSteps b{font-size:9px;line-height:1.35}
+.scanAnalysisSteps>div.active{border-color:#38a9cf;color:#e9f8fd;box-shadow:inset 2px 0 #38a9cf}
+.scanAnalysisSteps>div.complete{border-color:#2b7669;color:#77d9bd}
+.scanAnalysisSteps>div.complete span{border-color:#3abf9f;color:#5fe1bd}
+.scanAnalysisError,.scanReadyPrompt{display:flex;gap:12px;align-items:flex-start;margin-top:16px;padding:14px;border-radius:6px}
+.scanAnalysisError{display:block;border:1px solid #a65b47;background:#402a28}
+.scanAnalysisError b{color:#ffb091}.scanAnalysisError p{margin:5px 0 10px;color:#d8b9ad;font-size:10px}
+.scanReadyPrompt{border:1px solid #2d816e;background:#0c453f;color:#74dfbd}
+.scanReadyPrompt svg{flex:0 0 auto}.scanReadyPrompt b,.scanReadyPrompt span{display:block}
+.scanReadyPrompt b{font-size:10px;letter-spacing:.08em}.scanReadyPrompt span{margin-top:4px;color:#b6d9d0;font-size:10px}
+.profileMatchRow.topThree{grid-template-columns:repeat(3,minmax(0,1fr))}
+.profileMatchCard{position:relative}
+.profileMatchCard .matchRank{position:absolute;top:10px;left:10px;z-index:3;padding:4px 7px;border:1px solid #5a8297;border-radius:4px;background:#071e2ee6;color:#8fd6eb;font-size:8px;font-weight:900;letter-spacing:.08em}
+.staticStyleCard{cursor:default!important}
+.staticStyleCard:active{transform:none!important}
+.staticStyleCard .libraryCardCopy span{display:none!important}
+@keyframes clipAnalysisPulse{0%,100%{opacity:.45;transform:scale(.92)}50%{opacity:1;transform:scale(1)}}
+@media(max-width:900px){.scanAnalysisSteps{grid-template-columns:1fr 1fr}.profileMatchRow.topThree{grid-template-columns:1fr}}
+@media(max-width:620px){.scanAnalysisSteps{grid-template-columns:1fr}}
