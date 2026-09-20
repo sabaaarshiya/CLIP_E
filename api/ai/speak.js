@@ -1,14 +1,17 @@
 export default async function handler(req,res){
-  if(req.method!=='POST')return res.status(405).end();
+  if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
 
+  // Live Chat voice is intentionally server-controlled.
+  // The browser never chooses a voice ID: production always uses the
+  // ELEVENLABS_VOICE_ID configured in the Vercel environment.
   const apiKey=String(process.env.ELEVENLABS_API_KEY||'').trim();
   const voiceId=String(process.env.ELEVENLABS_VOICE_ID||'').trim();
 
-  if(!apiKey)return res.status(503).json({error:'ElevenLabs API key is not configured'});
-  if(!voiceId)return res.status(503).json({error:'ElevenLabs voice ID is not configured'});
+  if(!apiKey)return res.status(503).json({error:'ELEVENLABS_API_KEY is not configured in Vercel'});
+  if(!voiceId)return res.status(503).json({error:'ELEVENLABS_VOICE_ID is not configured in Vercel'});
 
   const {text}=req.body||{};
-  if(!text)return res.status(400).json({error:'Missing text'});
+  if(!String(text||'').trim())return res.status(400).json({error:'Missing text'});
 
   try{
     const r=await fetch(
@@ -17,10 +20,11 @@ export default async function handler(req,res){
         method:'POST',
         headers:{
           'xi-api-key':apiKey,
-          'Content-Type':'application/json'
+          'Content-Type':'application/json',
+          'Accept':'audio/mpeg'
         },
         body:JSON.stringify({
-          text,
+          text:String(text).trim(),
           model_id:'eleven_flash_v2_5'
         })
       }
@@ -37,8 +41,10 @@ export default async function handler(req,res){
     res.setHeader('Content-Type','audio/mpeg');
     res.setHeader('Content-Length',String(audio.length));
     res.setHeader('Cache-Control','no-store');
+    res.setHeader('X-Clip-E-Voice-Source','vercel-env');
     return res.status(200).end(audio);
   }catch(e){
-    return res.status(500).json({error:e.message});
+    console.error('Clip-E ElevenLabs speech failed',e);
+    return res.status(500).json({error:e?.message||'Speech request failed'});
   }
 }
