@@ -2206,3 +2206,6 @@ main{
 .rearPip .liveHeadAR .arHud{display:none}
 .rearPip .liveHeadAR .arLabel{font-size:18px}
 @media(max-width:700px){.arLabel{font-size:18px}.arLabelTop{font-size:20px}.arHud span:nth-child(n+3){display:none}.arGuide span{margin-top:180px}}
+
+.arEdgeLabel{fill:#ffd3cc;font-size:18px}
+.rearHeadAR .arLabel{font-size:18px}.rearHeadAR .arLabelTop{font-size:20px}.rearHeadAR .arEdgeLabel{font-size:16px}
