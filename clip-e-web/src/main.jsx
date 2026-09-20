@@ -1,5 +1,5 @@
 /* Clip-E dashboard refresh v2 */
-import React,{useEffect,useRef,useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight,Mic,Pause,Square,Volume2,Eye,Accessibility,RotateCcw,MessageCircle}from'lucide-react';import'./styles.css';import armLandingUrl from'../clip-e-landing-arm.webp';import PhoneCamera from'./PhoneCamera.jsx';import PhoneLiveView from'./PhoneLiveView.jsx';import LiveHeadAR from'./LiveHeadAR.jsx';import{QRCodeCanvas}from'qrcode.react';
+import React,{useEffect,useRef,useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight,Mic,Pause,Square,Volume2,Eye,Accessibility,RotateCcw,MessageCircle}from'lucide-react';import'./styles.css';import armLandingUrl from'../b00d3e39-7083-4054-948f-413744a7d37d.png';import PhoneCamera from'./PhoneCamera.jsx';import PhoneLiveView from'./PhoneLiveView.jsx';import LiveHeadAR from'./LiveHeadAR.jsx';import{QRCodeCanvas}from'qrcode.react';
 
 const steps=['Discover','Scan','Profile','Styles','Customize','Head Map','Review','Setup','Live Cut','Results','History','Accessibility'];
 
