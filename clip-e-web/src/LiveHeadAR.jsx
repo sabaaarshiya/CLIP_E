@@ -28,7 +28,7 @@ function deriveHeadGeometry(points,fadeHeight='Mid'){
   return{cx,headTop,headLeft,headRight,foreheadY,blendTop,blendBottom,sideBottom,faceH,faceW};
 }
 
-function geometryToSvg(g,topLength,sideLength,rear=false){
+function geometryToSvg(g,topLength,sideLength,rear=false,rearPlan=[]){
   if(!g)return null;
   const X=v=>Math.round(v*1000),Y=v=>Math.round(v*1000);
   const left=g.headLeft,right=g.headRight,cx=g.cx;
@@ -42,17 +42,20 @@ function geometryToSvg(g,topLength,sideLength,rear=false){
   const leftSide=`M ${X(left)} ${Y(blendBottom)} L ${X(leftInner)} ${Y(blendBottom)} L ${X(leftInner+.015)} ${Y(sideBottom)} L ${X(left+.025)} ${Y(sideBottom)} Z`;
   const rightSide=`M ${X(rightInner)} ${Y(blendBottom)} L ${X(right)} ${Y(blendBottom)} L ${X(right-.025)} ${Y(sideBottom)} L ${X(rightInner-.015)} ${Y(sideBottom)} Z`;
   const hairline=rear?`M ${X(left+.03)} ${Y(sideBottom-.015)} Q ${X(cx)} ${Y(sideBottom+.015)} ${X(right-.03)} ${Y(sideBottom-.015)}`:`M ${X(leftInner)} ${Y(foreheadY+.015)} Q ${X(cx)} ${Y(foreheadY-.035)} ${X(rightInner)} ${Y(foreheadY+.015)}`;
+  const plan=id=>rearPlan.find(x=>x.id===id);
+  const crown=plan('crown'),upper=plan('upperBack'),rearSides=plan('rearSides'),neckline=plan('neckline');
   return{
     topPath,leftBlend,rightBlend,leftSide,rightSide,hairline,
     labels:{
-      top:{x:X(cx),y:Y((topY+blendTop)/2),text:rear?`CROWN · ${topLength} mm`:`TOP · ${topLength} mm`},
-      blend:{x:X(right-.02),y:Y((blendTop+blendBottom)/2),text:rear?'BLEND BAND':'BLEND'},
-      side:{x:X(right-.02),y:Y((blendBottom+sideBottom)/2),text:rear?`LOWER BACK · ${sideLength} mm`:`SIDE · ${sideLength} mm`}
+      top:{x:X(cx),y:Y((topY+blendTop)/2),text:rear?(crown?.work?`CROWN · ${crown.action}`:'CROWN · PRESERVE'):`TOP · CUT TO ${topLength} mm`},
+      blend:{x:X(right-.02),y:Y((blendTop+blendBottom)/2),text:rear?(upper?.action||'UPPER BACK · VERIFY'):'BLEND TRANSITION'},
+      side:{x:X(right-.02),y:Y((blendBottom+sideBottom)/2),text:rear?(rearSides?.action||`LOWER BACK · ${sideLength} mm`):`SIDE · CUT TO ${sideLength} mm`},
+      edge:{x:X(cx),y:Y(sideBottom-.025),text:rear?(neckline?.action||'NECKLINE · PROTECT'):'HAIRLINE · PROTECTED'}
     }
   };
 }
 
-export default function LiveHeadAR({src='',stream=null,topLength=25,sideLength=6,fadeHeight='Mid',className='',showLandmarks=false,onTracking,rear=false}){
+export default function LiveHeadAR({src='',stream=null,topLength=25,sideLength=6,fadeHeight='Mid',className='',showLandmarks=false,onTracking,rear=false,rearPlan=[]}){
   const imgRef=useRef(null),videoRef=useRef(null),hairCanvasRef=useRef(null),landmarkerRef=useRef(null),segmenterRef=useRef(null),rafRef=useRef(null),lastVideoTime=useRef(-1),lastSegTime=useRef(0),smoothedRef=useRef(null),faceSeenRef=useRef(false);
   const[geometry,setGeometry]=useState(null);
   const[status,setStatus]=useState('LOADING TRACKER');
@@ -145,12 +148,12 @@ export default function LiveHeadAR({src='',stream=null,topLength=25,sideLength=6
 
   useEffect(()=>{if(!stream&&src&&imgRef.current?.complete)analyzeImage()},[src,fadeHeight,showLandmarks]);
 
-  const svg=useMemo(()=>geometryToSvg(geometry,topLength,sideLength,rear),[geometry,topLength,sideLength,rear]);
+  const svg=useMemo(()=>geometryToSvg(geometry,topLength,sideLength,rear,rearPlan),[geometry,topLength,sideLength,rear,rearPlan]);
   return <div className={'liveHeadAR '+className}>
     {stream?<video ref={videoRef} autoPlay playsInline muted/>:<img ref={imgRef} src={src} onLoad={analyzeImage} alt="Clip-E camera with AR cut map"/>}
     <canvas ref={hairCanvasRef} className="arHairMask" aria-hidden="true"/>
     <svg className={'headArSvg '+(geometry?'locked':'')} viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
-      {svg&&<><path className="arTop" d={svg.topPath}/><path className="arBlend" d={svg.leftBlend}/><path className="arBlend" d={svg.rightBlend}/><path className="arSide" d={svg.leftSide}/><path className="arSide" d={svg.rightSide}/><path className={'arHairline '+(rear?'rearEdge':'')} d={svg.hairline}/><text className="arLabel arLabelTop" x={svg.labels.top.x} y={svg.labels.top.y}>{svg.labels.top.text}</text><text className="arLabel" textAnchor="end" x={svg.labels.blend.x} y={svg.labels.blend.y}>{svg.labels.blend.text}</text><text className="arLabel" textAnchor="end" x={svg.labels.side.x} y={svg.labels.side.y}>{svg.labels.side.text}</text></>}
+      {svg&&<><path className="arTop" d={svg.topPath}/><path className="arBlend" d={svg.leftBlend}/><path className="arBlend" d={svg.rightBlend}/><path className="arSide" d={svg.leftSide}/><path className="arSide" d={svg.rightSide}/><path className={'arHairline '+(rear?'rearEdge':'')} d={svg.hairline}/><text className="arLabel arLabelTop" x={svg.labels.top.x} y={svg.labels.top.y}>{svg.labels.top.text}</text><text className="arLabel" textAnchor="end" x={svg.labels.blend.x} y={svg.labels.blend.y}>{svg.labels.blend.text}</text><text className="arLabel" textAnchor="end" x={svg.labels.side.x} y={svg.labels.side.y}>{svg.labels.side.text}</text><text className="arLabel arEdgeLabel" textAnchor="middle" x={svg.labels.edge.x} y={svg.labels.edge.y}>{svg.labels.edge.text}</text></>}
       {landmarks.map((p,i)=><circle key={i} className="arLandmark" cx={p.x*1000} cy={p.y*1000} r="2.5"/>)}
     </svg>
     <div className="arHud"><span className={geometry?'arLive':'arWaiting'}>● {status}</span><span>{mode} · {quality.fps||'—'} FPS</span><span>LOCK {quality.confidence}%</span><span>{hairStatus}</span></div>
