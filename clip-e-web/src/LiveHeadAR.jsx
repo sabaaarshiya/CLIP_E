@@ -53,7 +53,7 @@ function geometryToSvg(g,topLength,sideLength){
 }
 
 export default function LiveHeadAR({src='',stream=null,topLength=25,sideLength=6,fadeHeight='Mid',className='',showLandmarks=false,onTracking}){
-  const imgRef=useRef(null),videoRef=useRef(null),hairCanvasRef=useRef(null),landmarkerRef=useRef(null),segmenterRef=useRef(null),rafRef=useRef(null),lastVideoTime=useRef(-1),lastSegTime=useRef(0),smoothedRef=useRef(null);
+  const imgRef=useRef(null),videoRef=useRef(null),hairCanvasRef=useRef(null),landmarkerRef=useRef(null),segmenterRef=useRef(null),rafRef=useRef(null),lastVideoTime=useRef(-1),lastSegTime=useRef(0),smoothedRef=useRef(null),faceSeenRef=useRef(false);
   const[geometry,setGeometry]=useState(null);
   const[status,setStatus]=useState('LOADING TRACKER');
   const[quality,setQuality]=useState({confidence:0,fps:0});const[hairStatus,setHairStatus]=useState('HAIR MODEL LOADING');
@@ -90,7 +90,7 @@ export default function LiveHeadAR({src='',stream=null,topLength=25,sideLength=6
   return()=>{cancelled=true;if(rafRef.current)cancelAnimationFrame(rafRef.current);landmarkerRef.current?.close();segmenterRef.current?.close();landmarkerRef.current=null;segmenterRef.current=null}},[mode]);
 
   function publish(points){
-    if(!points?.length){setStatus('HEAD NOT DETECTED');setGeometry(null);setLandmarks([]);onTracking?.({tracking:false});return}
+    if(!points?.length){faceSeenRef.current=false;setStatus('FACE NOT DETECTED · USING HAIR MASK');setLandmarks([]);return}faceSeenRef.current=true;
     const raw=deriveHeadGeometry(points,fadeHeight);
     if(!raw){setStatus('LOW CONFIDENCE');return}
     const prev=smoothedRef.current;
@@ -117,8 +117,14 @@ export default function LiveHeadAR({src='',stream=null,topLength=25,sideLength=6
       if(!data||!w||!h)return;
       canvas.width=w;canvas.height=h;
       const ctx=canvas.getContext('2d');const image=ctx.createImageData(w,h);
-      for(let i=0;i<data.length;i++){const hair=data[i]===1;const o=i*4;image.data[o]=42;image.data[o+1]=213;image.data[o+2]=186;image.data[o+3]=hair?72:0}
+      let minX=w,minY=h,maxX=0,maxY=0,hairPixels=0;
+      for(let i=0;i<data.length;i++){const hair=data[i]===1;const o=i*4;image.data[o]=42;image.data[o+1]=213;image.data[o+2]=186;image.data[o+3]=hair?72:0;if(hair){const x=i%w,y=Math.floor(i/w);if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;hairPixels++}}
       ctx.putImageData(image,0,0);setHairStatus('HAIR LOCKED');
+      if(!faceSeenRef.current&&hairPixels>w*h*.015&&maxX>minX&&maxY>minY){
+        const left=minX/w,right=maxX/w,top=minY/h,bottom=maxY/h,bh=bottom-top,bw=right-left,cx=(left+right)/2;
+        const raw={cx,headTop:top,headLeft:left,headRight:right,foreheadY:top+bh*.34,blendTop:top+bh*.38,blendBottom:top+bh*.68,sideBottom:bottom,faceH:bh,faceW:bw};
+        const prev=smoothedRef.current,g={};for(const k of Object.keys(raw))g[k]=smooth(prev?.[k],raw[k],.22);smoothedRef.current=g;setGeometry(g);setStatus('HAIR LOCKED · REAR');const confidence=Math.round(clamp((hairPixels/(w*h)-.02)/.25,0,1)*100);setQuality(q=>({...q,confidence}));onTracking?.({tracking:true,confidence,geometry:g,source:'hair-mask'});
+      }
     }catch(e){console.warn('Hair mask render failed',e);setHairStatus('HAIR MASK RETRYING')}
   }
 
