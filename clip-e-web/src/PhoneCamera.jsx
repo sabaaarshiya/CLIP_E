@@ -9,7 +9,10 @@ export default function PhoneCamera(){
   const [fps,setFps]=useState(2);
   const [token,setToken]=useState('');
   const [expiresAt,setExpiresAt]=useState(0);
-  const session=new URLSearchParams(location.search).get('session')||'demo';
+  const params=new URLSearchParams(location.search);
+  const session=params.get('session')||'demo';
+  const mode=params.get('mode')==='clip-e'?'clip-e':'scan';
+  const modeLabel=mode==='clip-e'?'CLIP-E REAR ASSIST CAMERA':'SCAN REAR CAMERA';
   const rtcConfig={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
 
   function waitIce(pc,timeout=3500){
@@ -131,12 +134,12 @@ export default function PhoneCamera(){
   },[]);
 
   return <div className="phoneCamPage">
-    <header className="phoneCamHeader"><div><b>CLIP-E</b><span>FIXED REAR WORKSPACE CAMERA</span></div><span className={running?'phoneLive':'phoneIdle'}>{running?<Wifi size={15}/>:<WifiOff size={15}/>} {running?'LIVE':'OFFLINE'}</span></header>
+    <header className="phoneCamHeader"><div><b>CLIP-E</b><span>{modeLabel}</span></div><span className={running?'phoneLive':'phoneIdle'}>{running?<Wifi size={15}/>:<WifiOff size={15}/>} {running?'LIVE':'OFFLINE'}</span></header>
     <main className="phoneCamMain">
       <section className="phoneCamStage">
         <video ref={videoRef} autoPlay playsInline muted/>
         <canvas ref={canvasRef} hidden/>
-        <div className="backGuide"><div className="headGuide"/><b>Frame HEAD + CLIPPER together</b><span>Mount the phone behind the arm. Keep the crown, nape, both ears, and clipper/tool tip visible in the same frame.</span></div>
+        <div className="backGuide"><div className="headGuide"/><b>{mode==='clip-e'?'Frame the back of the head':'Frame the back of your head'}</b><span>{mode==='clip-e'?'Place this phone behind the user. Keep the crown, nape, both ears, and rear sides visible for Clip-E calibration and assistance.':'Keep the crown, nape, both ears, and rear hairline visible for the back scan.'}</span></div>
       </section>
       <section className="phoneCamControls">
         <div><span>SESSION</span><b>{session}</b></div>
@@ -144,7 +147,7 @@ export default function PhoneCamera(){
         <input type="range" min="1" max="5" value={fps} onChange={e=>setFps(Number(e.target.value))}/>
         <p>{status}</p>
         {!running?<button className="primary big" onClick={start}><Camera size={18}/> Start rear camera</button>:<button className="ghost big" onClick={stop}><RefreshCw size={18}/> Stop camera</button>}
-        <div className="phoneMountChecklist"><b>Mount once, then leave it fixed</b><span>1. Place the phone behind and slightly above the arm.</span><span>2. Aim toward the back of the head.</span><span>3. Keep the clipper/tool tip visible in the same frame.</span><span>4. Do not move the phone during the assisted session.</span></div><small>This fixed view is used for the rear head map and operator-guided approach. WebRTC carries the live video; JPEG snapshots continue in parallel for scan capture and fallback.</small>
+        <div className="phoneMountChecklist"><b>{mode==='clip-e'?'Dedicated CLIP-E rear view':'Back scan view'}</b>{mode==='clip-e'?<><span>1. Place this phone behind the user.</span><span>2. Aim at the back, nape, and rear sides.</span><span>3. Keep both ears and the full rear hairline visible.</span><span>4. Leave this phone fixed during calibration and assistance.</span></>:<><span>1. Hold or place the phone behind the user.</span><span>2. Keep the full back of the head visible.</span><span>3. Capture crown, nape, rear sides, and both ears.</span><span>4. Return to the computer when the scan registers.</span></>}</div><small>{mode==='clip-e'?'This camera session is separate from the Scan phone connection.':'This camera session is used only for the Scan back view.'}</small>
       </section>
     </main>
   </div>
