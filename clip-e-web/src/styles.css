@@ -2075,3 +2075,15 @@ main{
 .clipEWorkspace .rearMappingSection{
   transform:none!important;
 }
+
+/* Keep Human setup checks in its assigned Calibration grid cell — never float over later sections */
+.phaseCalibrate .setupChecklist{
+  position:static!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+  z-index:auto!important;
+  align-self:stretch!important;
+  transform:none!important;
+}
