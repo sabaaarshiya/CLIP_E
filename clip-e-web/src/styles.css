@@ -1253,29 +1253,30 @@ main{
   position:relative;
   min-height:520px;
   padding:0!important;
+  margin:0!important;
   background:#081f30!important;
   overflow:hidden!important;
   border-radius:18px!important;
-  display:flex!important;
-  align-items:stretch!important;
-  justify-content:stretch!important;
+  display:block!important;
+  line-height:0!important;
 }
 
 .discoverHeroRepoImage,
 .armLandingVisual>img{
   position:absolute!important;
-  top:50%!important;
-  left:50%!important;
-  width:132%!important;
-  height:132%!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
   max-width:none!important;
   max-height:none!important;
   object-fit:cover!important;
-  object-position:center center!important;
-  transform:translate(-61%,-50%)!important;
+  object-position:42% 50%!important;
+  transform:none!important;
   display:block!important;
-  border-radius:0!important;
-  background:transparent!important;
+  border-radius:inherit!important;
+  margin:0!important;
+  padding:0!important;
+  background:#081f30!important;
 }
 
 .armLandingVisual::before,
@@ -1291,8 +1292,9 @@ main{
 
   .discoverHeroRepoImage,
   .armLandingVisual>img{
-    width:138%!important;
-    height:138%!important;
+    width:100%!important;
+    height:100%!important;
+    object-position:42% 50%!important;
   }
 }
 
