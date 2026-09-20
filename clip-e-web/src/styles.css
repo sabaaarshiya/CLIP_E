@@ -2312,17 +2312,18 @@ main{
 .scanPhotoRail{
   position:absolute;
   left:18px;
-  right:18px;
-  bottom:42px;
+  top:50%;
+  transform:translateY(-50%);
+  width:112px;
   z-index:9;
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:1fr;
   gap:8px;
   pointer-events:none;
 }
 .scanPhotoSlot{
   min-width:0;
-  height:78px;
+  height:88px;
   border:1px solid #315b72;
   border-radius:6px;
   overflow:hidden;
@@ -2333,7 +2334,7 @@ main{
 }
 .scanPhotoSlot.current{border-color:#4bb8de;box-shadow:0 0 0 1px #4bb8de33}
 .scanPhotoSlot.filled{border-color:#2c7b6b}
-.scanPhotoSlot img{width:100%;height:54px;object-fit:cover;display:block}
+.scanPhotoSlot img{width:100%;height:64px;object-fit:cover;display:block}
 .scanPhotoSlot>span{display:grid;place-items:center;color:#587c90}
 .scanPhotoSlot b{display:block;padding:4px 6px;background:#061b2ae8;color:#91acbc;font-size:8px;letter-spacing:.04em;text-align:center}
 .scanPhotoSlot.filled b{color:#68dab8}
@@ -2371,8 +2372,8 @@ main{
 .cameraScanner:has(.completedScanBoard) .poseGuide,
 .cameraScanner:has(.completedScanBoard) .scanPhotoRail{display:none}
 @media(max-width:700px){
-  .scanPhotoRail{left:10px;right:10px;bottom:38px;gap:4px}
-  .scanPhotoSlot{height:62px}
-  .scanPhotoSlot img{height:40px}
+  .scanPhotoRail{left:10px;top:50%;transform:translateY(-50%);width:86px;gap:4px}
+  .scanPhotoSlot{height:66px}
+  .scanPhotoSlot img{height:44px}
   .completedScanBoard{grid-template-columns:1fr 1fr}
 }
