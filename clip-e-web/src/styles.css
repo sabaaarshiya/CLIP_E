@@ -1254,33 +1254,47 @@ main{
   min-height:520px;
   padding:0!important;
   background:#081f30!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
   overflow:hidden!important;
   border-radius:18px!important;
-}
-.armLandingVisual>img{
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:auto!important;
-  height:100%!important;
-  max-width:none!important;
-  max-height:none!important;
-  min-height:100%!important;
-  object-fit:contain!important;
-  object-position:center center!important;
-  display:block!important;
-  border-radius:0;
-  transform:translate(-50%,-50%) scale(1.03)!important;
-  transform-origin:center center;
-}
-@media(max-width:1000px){
-  .armLandingVisual{min-height:420px}
-  .armLandingVisual>img{transform:translate(-50%,-50%) scale(1.01)!important}
+  display:flex!important;
+  align-items:stretch!important;
+  justify-content:stretch!important;
 }
 
+.discoverHeroRepoImage,
+.armLandingVisual>img{
+  position:absolute!important;
+  top:50%!important;
+  left:50%!important;
+  width:132%!important;
+  height:132%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  transform:translate(-50%,-50%)!important;
+  display:block!important;
+  border-radius:0!important;
+  background:transparent!important;
+}
+
+.armLandingVisual::before,
+.armLandingVisual::after{
+  display:none!important;
+  content:none!important;
+}
+
+@media(max-width:1000px){
+  .armLandingVisual{
+    min-height:420px;
+  }
+
+  .discoverHeroRepoImage,
+  .armLandingVisual>img{
+    width:138%!important;
+    height:138%!important;
+  }
+}
 
 /* WebRTC phone rear-camera + live cut mapping */
 .phoneLiveView{position:relative;width:100%;height:100%;min-height:220px;overflow:hidden;border-radius:8px;background:#041421;border:1px solid #284a61}
