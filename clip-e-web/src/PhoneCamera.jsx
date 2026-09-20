@@ -2,7 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {Camera,RefreshCw,Wifi,WifiOff} from 'lucide-react';
 
 export default function PhoneCamera(){
-  const videoRef=useRef(null),canvasRef=useRef(null),timerRef=useRef(null),streamRef=useRef(null),pcRef=useRef(null),answerTimerRef=useRef(null),frameCallbackRef=useRef(null),captureFpsRef=useRef({t:performance.now(),n:0});
+  const videoRef=useRef(null),canvasRef=useRef(null),timerRef=useRef(null),streamRef=useRef(null),pcRef=useRef(null),answerTimerRef=useRef(null),frameCallbackRef=useRef(null),captureFpsRef=useRef({t:performance.now(),n:0}),seqRef=useRef(0),tokenRef=useRef(''),expiresAtRef=useRef(0),uploadBusyRef=useRef(false);
   const [running,setRunning]=useState(false);
   const [status,setStatus]=useState('Ready');
   const [seq,setSeq]=useState(0);
@@ -77,7 +77,7 @@ export default function PhoneCamera(){
     const r=await fetch('/api/camera/phone-token',{cache:'no-store'});
     const j=await r.json();
     if(!r.ok)throw Error(j.error||'Could not authorize phone camera');
-    setToken(j.token);setExpiresAt(j.expires_at);return j.token;
+    tokenRef.current=j.token;expiresAtRef.current=j.expires_at;setToken(j.token);setExpiresAt(j.expires_at);return j.token;
   }
 
   async function start(){
@@ -133,28 +133,35 @@ export default function PhoneCamera(){
   }
 
   async function uploadFrame(){
+    if(uploadBusyRef.current)return;
     const v=videoRef.current,c=canvasRef.current;
     if(!v?.videoWidth||!c)return;
-    c.width=640;c.height=Math.round(640*v.videoHeight/v.videoWidth);
-    c.getContext('2d').drawImage(v,0,0,c.width,c.height);
-    const blob=await new Promise(resolve=>c.toBlob(resolve,'image/jpeg',0.68));
-    if(!blob)return;
-    let auth=token;
-    if(!auth||Date.now()>expiresAt-60000)auth=await getToken();
-    const next=seq+1;
-    const r=await fetch('/api/camera/phone-upload',{
-      method:'POST',
-      headers:{
-        'Content-Type':'image/jpeg',
-        'x-trimsync-phone-token':auth,
-        'x-trimsync-device-id':'phone-back-01',
-        'x-trimsync-frame-seq':String(next),
-        'x-trimsync-session-id':session
-      },
-      body:blob
-    });
-    if(!r.ok){const j=await r.json().catch(()=>({}));throw Error(j.error||'Upload failed')}
-    setSeq(next);setStatus('Live · frame '+next);
+    uploadBusyRef.current=true;
+    try{
+      c.width=640;c.height=Math.max(1,Math.round(640*v.videoHeight/v.videoWidth));
+      c.getContext('2d',{alpha:false,desynchronized:true}).drawImage(v,0,0,c.width,c.height);
+      const blob=await new Promise(resolve=>c.toBlob(resolve,'image/jpeg',0.72));
+      if(!blob?.size)return;
+      let auth=tokenRef.current;
+      if(!auth||Date.now()>expiresAtRef.current-60000)auth=await getToken();
+      const next=seqRef.current+1;
+      const r=await fetch('/api/camera/phone-upload',{
+        method:'POST',
+        headers:{
+          'Content-Type':'image/jpeg',
+          'x-trimsync-phone-token':auth,
+          'x-trimsync-device-id':'phone-back-01',
+          'x-trimsync-frame-seq':String(next),
+          'x-trimsync-session-id':session
+        },
+        body:blob,
+        cache:'no-store'
+      });
+      if(!r.ok){const j=await r.json().catch(()=>({}));throw Error(j.error||'Upload failed')}
+      seqRef.current=next;setSeq(next);setStatus('Live · frame '+next);
+    }finally{
+      uploadBusyRef.current=false;
+    }
   }
 
   useEffect(()=>{
@@ -175,7 +182,7 @@ export default function PhoneCamera(){
     uploadFrame().catch(e=>setStatus(e.message));
     timerRef.current=setInterval(()=>uploadFrame().catch(e=>setStatus(e.message)),Math.max(200,1000/fps));
     return()=>{if(timerRef.current)clearInterval(timerRef.current)}
-  },[running,fps,token,expiresAt]);
+  },[running,fps]);
 
   useEffect(()=>{
     // Try immediately so Android/Chrome can show the permission prompt on page load.
