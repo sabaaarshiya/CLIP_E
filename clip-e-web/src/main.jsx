@@ -1,5 +1,5 @@
 /* Clip-E dashboard refresh v2 */
-import React,{useEffect,useRef,useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight,Mic,Pause,Square,Volume2,Eye,Accessibility,RotateCcw,MessageCircle}from'lucide-react';import'./styles.css';import armLandingUrl from'../b00d3e39-7083-4054-948f-413744a7d37d.png';import PhoneCamera from'./PhoneCamera.jsx';import PhoneLiveView from'./PhoneLiveView.jsx';import LiveHeadAR from'./LiveHeadAR.jsx';import{QRCodeCanvas}from'qrcode.react';
+import React,{useEffect,useRef,useState} from'react';import{createRoot}from'react-dom/client';import{Camera,Upload,ArrowRight,ShieldCheck,Wifi,CheckCircle2,Scissors,Sparkles,Target,Activity,ChevronRight,Mic,Pause,Square,Volume2,Eye,Accessibility,RotateCcw,MessageCircle}from'lucide-react';import'./styles.css';import armLandingUrl from'../b00d3e39-7083-4054-948f-413744a7d37d.png';import PhoneCamera from'./PhoneCamera.jsx';import PhoneLiveView from'./PhoneLiveView.jsx';import LiveHeadAR from'./LiveHeadAR.jsx';import{DEMO_PERSON_SHEET}from'./demoPerson.js';import{QRCodeCanvas}from'qrcode.react';
 
 const steps=['Discover','Scan','Profile','Styles','Customize','Head Map','Review','Setup','Live Cut','Results','History','Accessibility'];
 
@@ -372,73 +372,27 @@ async function sendArmAssist(command,args={}){
   }catch(e){setAssistCommandState(e.message||'Command failed')}
 }
 async function askClipE(message){if(!message)return;setUserSaid(message);if(/^(pause|pause clip-e)$/i.test(message.trim())){setPaused(true);setClipSaid('Pause requested in the interface. Confirm the physical arm has stopped before continuing.');return}if(/^(stop|stop cut)$/i.test(message.trim())){setPaused(true);setClipSaid('Stop requested in the interface. Use the physical emergency stop if the arm is still moving.');return}setTalkState('thinking');try{const frameDataUrl=await captureClipEConversationFrame();const context={stage:'Live Cut',userProfile:{selectedStyle:styles[style]?.[0]||'Selected style',hairGoal},cutPlan:{topLengthMm:topLength,sideLengthMm:sideLength,fadeHeight,texture,finish,approved:planApproved},robot:{online:armStatus.online,status:paused?'ui-paused':armStatus.payload?.mode||'unknown',armed:Boolean(armStatus.payload?.armed),pcaReady:Boolean(armStatus.payload?.pca_ready),estop:Boolean(armStatus.payload?.estop),jointDeg:Array.isArray(armStatus.payload?.joint_deg)?armStatus.payload.joint_deg.slice(0,5):null},safety:{uiPaused:paused,physicalEstopReported:Boolean(armStatus.payload?.estop),robotCamera:robotCameraOnline?'online':'offline'},cameras:{userFacing:stream?'online':'offline',frontSide:{device:'camera-01',status:robotCameraOnline?'online':'offline',role:'front_side_workspace'},rearHead:{device:'phone-back-01',status:clipEPhoneCameraOnline?'online':'offline',role:'back_head_neckline'}},presage:{available:!!presageSignal,status:presageState,signal:presageSignal||null,note:presageSignal?'Presage is contextual only; do not infer internal emotion, medical state, or safety from it.':'No current Presage signal'},scanAnalysis:analysis?{shape:analysis.shape,proportion:analysis.proportion,jaw:analysis.jaw,cheekbones:analysis.cheekbones,landmarks:analysis.landmarks}:null,conversationEvent:{source:'barber-voice',transcript:message},timestamp:new Date().toISOString()};const r=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message,transcript:message,context,frameDataUrl})});const j=await r.json();if(!r.ok)throw Error(j.error||'Clip-E unavailable');setClipSaid(j.text);setTalkState('speaking');const a=await fetch('/api/ai/speak',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:j.text})});if(!a.ok){let detail='ElevenLabs voice failed';try{const ej=await a.json();detail=ej.error||detail}catch{}throw Error(detail)}const blob=await a.blob();const audioUrl=URL.createObjectURL(blob);const audio=new Audio(audioUrl);audio.preload='auto';audio.volume=1;audio.onended=()=>{URL.revokeObjectURL(audioUrl);setTalkState('idle')};audio.onerror=()=>{URL.revokeObjectURL(audioUrl);setClipSaid(j.text+' — Voice playback failed.');setTalkState('idle')};try{await audio.play()}catch(playErr){URL.revokeObjectURL(audioUrl);setClipSaid(j.text+' — Tap Talk to Clip-E again to enable audio playback.');setTalkState('idle')}}catch(e){setClipSaid(e.message);setTalkState('idle')}}function startClipVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){setClipSaid('Voice input is not supported in this browser.');return}const r=new SR();r.lang='en-US';r.interimResults=false;setTalkState('listening');r.onresult=e=>askClipE(e.results[0][0].transcript);r.onerror=()=>setTalkState('idle');r.onend=()=>setTalkState(x=>x==='listening'?'idle':x);r.start()}function retake(){stream?.getTracks().forEach(t=>t.stop());setStream(null);setPhoto('');setPreview('');setAnalysis(null);setHairAnalysis(null);setTopMatches([]);setProfileReady(false);setScanAnalysisStage('');setHairAnalysisError('');setScanShots([]);setScanPose(0);setAnalyzing(false);sessionStorage.removeItem('clipPhoto');sessionStorage.removeItem('clipAnalysis');sessionStorage.removeItem('clipHairAnalysis');sessionStorage.removeItem('clipTopMatches');sessionStorage.removeItem('clipProfileReady');sessionStorage.removeItem('clipScanAnalysisStage');sessionStorage.removeItem('clipScanShots');sessionStorage.removeItem('clipFinalPhoto');localStorage.removeItem('clipPhoto');localStorage.removeItem('clipAnalysis');setScanState('Camera ready')}
-function makeDemoPersonScans(){
-  const views=['front','left','right','back'];
-  return views.map(view=>{
+async function makeDemoPersonScans(){
+  const sheet=new Image();
+  sheet.src=DEMO_PERSON_SHEET;
+  await sheet.decode();
+
+  const cellWidth=Math.floor(sheet.naturalWidth/2);
+  const cellHeight=Math.floor(sheet.naturalHeight/2);
+  const coords=[
+    [0,0],
+    [cellWidth,0],
+    [0,cellHeight],
+    [cellWidth,cellHeight]
+  ];
+
+  return coords.map(([sx,sy])=>{
     const cv=document.createElement('canvas');
-    cv.width=768;cv.height=1024;
-    const ctx=cv.getContext('2d');
-    const bg=ctx.createLinearGradient(0,0,0,1024);
-    bg.addColorStop(0,'#d7dde2');bg.addColorStop(1,'#b7c2cb');
-    ctx.fillStyle=bg;ctx.fillRect(0,0,768,1024);
-
-    // soft studio vignette
-    const glow=ctx.createRadialGradient(384,430,80,384,430,520);
-    glow.addColorStop(0,'rgba(255,255,255,.45)');glow.addColorStop(1,'rgba(30,50,70,.08)');
-    ctx.fillStyle=glow;ctx.fillRect(0,0,768,1024);
-
-    // shoulders + shirt
-    ctx.fillStyle='#263746';
-    ctx.beginPath();ctx.moveTo(135,1024);ctx.quadraticCurveTo(180,810,310,790);ctx.lineTo(458,790);ctx.quadraticCurveTo(590,810,633,1024);ctx.closePath();ctx.fill();
-
-    const skin='#c99573',skinDark='#a97455',hair='#221a18',hairLite='#3a2a24';
-    ctx.fillStyle=skin;
-    ctx.fillRect(338,690,92,145);
-
-    if(view==='front'){
-      // ears
-      ctx.fillStyle=skinDark;ctx.beginPath();ctx.ellipse(246,500,30,62,0,0,Math.PI*2);ctx.ellipse(522,500,30,62,0,0,Math.PI*2);ctx.fill();
-      // face
-      ctx.fillStyle=skin;ctx.beginPath();ctx.ellipse(384,475,145,205,0,0,Math.PI*2);ctx.fill();
-      // hair mass
-      ctx.fillStyle=hair;ctx.beginPath();ctx.moveTo(245,410);ctx.bezierCurveTo(235,245,300,205,384,205);ctx.bezierCurveTo(495,205,548,285,525,430);ctx.bezierCurveTo(500,365,466,338,432,326);ctx.bezierCurveTo(405,352,370,354,336,330);ctx.bezierCurveTo(300,352,270,380,245,410);ctx.fill();
-      // wavy top accents
-      ctx.strokeStyle=hairLite;ctx.lineWidth=13;ctx.lineCap='round';
-      [[285,300,335,255],[325,280,380,235],[370,275,430,230],[415,292,474,253]].forEach(p=>{ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.quadraticCurveTo((p[0]+p[2])/2,p[1]-28,p[2],p[3]);ctx.stroke()});
-      // brows
-      ctx.strokeStyle='#3a2925';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(295,445);ctx.quadraticCurveTo(325,430,350,442);ctx.stroke();ctx.beginPath();ctx.moveTo(418,442);ctx.quadraticCurveTo(445,430,475,445);ctx.stroke();
-      // eyes
-      ctx.fillStyle='#2c2725';ctx.beginPath();ctx.ellipse(325,470,10,6,0,0,Math.PI*2);ctx.ellipse(443,470,10,6,0,0,Math.PI*2);ctx.fill();
-      // nose
-      ctx.strokeStyle='rgba(120,70,50,.75)';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(385,478);ctx.quadraticCurveTo(370,535,390,545);ctx.stroke();
-      // mouth
-      ctx.strokeStyle='#8e4f50';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(345,585);ctx.quadraticCurveTo(384,600,423,585);ctx.stroke();
-    }else if(view==='left'||view==='right'){
-      const flip=view==='right'?-1:1;
-      ctx.save();ctx.translate(384,0);ctx.scale(flip,1);ctx.translate(-384,0);
-      // ear + profile
-      ctx.fillStyle=skinDark;ctx.beginPath();ctx.ellipse(485,505,30,61,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=skin;ctx.beginPath();ctx.moveTo(300,300);ctx.bezierCurveTo(255,355,252,560,330,650);ctx.bezierCurveTo(365,690,420,690,458,645);ctx.bezierCurveTo(438,610,432,580,448,555);ctx.bezierCurveTo(469,530,474,504,450,490);ctx.bezierCurveTo(428,472,414,448,420,425);ctx.bezierCurveTo(430,385,397,315,350,295);ctx.closePath();ctx.fill();
-      // profile hair
-      ctx.fillStyle=hair;ctx.beginPath();ctx.moveTo(278,415);ctx.bezierCurveTo(248,280,320,210,405,218);ctx.bezierCurveTo(475,225,520,290,505,435);ctx.bezierCurveTo(470,380,420,340,354,332);ctx.bezierCurveTo(330,360,304,390,278,415);ctx.fill();
-      ctx.strokeStyle=hairLite;ctx.lineWidth=12;ctx.lineCap='round';
-      [[315,295,360,250],[350,285,405,242],[392,295,445,260]].forEach(p=>{ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.quadraticCurveTo((p[0]+p[2])/2,p[1]-22,p[2],p[3]);ctx.stroke()});
-      // eye/brow profile
-      ctx.strokeStyle='#3a2925';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(350,448);ctx.lineTo(385,442);ctx.stroke();
-      ctx.fillStyle='#2c2725';ctx.beginPath();ctx.ellipse(380,470,9,5,0,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle='#8e4f50';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(416,572);ctx.lineTo(444,578);ctx.stroke();
-      ctx.restore();
-    }else{
-      // back neck and head/hair
-      ctx.fillStyle=skin;ctx.beginPath();ctx.ellipse(384,500,142,205,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=hair;ctx.beginPath();ctx.moveTo(246,430);ctx.bezierCurveTo(235,260,300,210,384,210);ctx.bezierCurveTo(485,210,538,282,525,440);ctx.lineTo(500,610);ctx.bezierCurveTo(455,665,315,665,268,610);ctx.closePath();ctx.fill();
-      ctx.strokeStyle=hairLite;ctx.lineWidth=14;ctx.lineCap='round';
-      [[280,315,345,260],[330,300,392,245],[380,300,450,250],[430,320,492,275],[300,390,365,345],[360,385,430,340],[420,400,485,355]].forEach(p=>{ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.quadraticCurveTo((p[0]+p[2])/2,p[1]-30,p[2],p[3]);ctx.stroke()});
-      // neckline
-      ctx.fillStyle=skin;ctx.beginPath();ctx.moveTo(335,648);ctx.quadraticCurveTo(384,680,433,648);ctx.lineTo(430,720);ctx.lineTo(338,720);ctx.closePath();ctx.fill();
-    }
-
-    return cv.toDataURL('image/jpeg',.92);
+    cv.width=cellWidth;
+    cv.height=cellHeight;
+    const ctx=cv.getContext('2d',{alpha:false});
+    ctx.drawImage(sheet,sx,sy,cellWidth,cellHeight,0,0,cellWidth,cellHeight);
+    return cv.toDataURL('image/jpeg',.94);
   });
 }
 
@@ -454,7 +408,7 @@ async function loadDemoPerson(){
     setHairAnalysisError('');
     setScanState('Loading demo scan…');
 
-    const demo=makeDemoPersonScans();
+    const demo=await makeDemoPersonScans();
     setPhoto(demo[0]);
     setScanShots(demo);
     setScanPose(4);
@@ -462,10 +416,15 @@ async function loadDemoPerson(){
     sessionStorage.setItem('clipScanShots',JSON.stringify(demo));
     try{localStorage.setItem('clipPhoto',demo[0])}catch{}
 
-    // Demo images are synthetic, so skip local face-landmark gating and let Gemini analyze all four views.
-    setAnalysis(null);
-    sessionStorage.removeItem('clipAnalysis');
-    localStorage.removeItem('clipAnalysis');
+    // Photorealistic synthetic demo views. Let MediaPipe try the front image,
+    // but Gemini still analyzes all four views even if local landmarks do not resolve.
+    const faceMapped=await analyzeImage(demo[0]);
+    if(!faceMapped){
+      setAnalysis(null);
+      sessionStorage.removeItem('clipAnalysis');
+      localStorage.removeItem('clipAnalysis');
+      setAnalysisError('');
+    }
     setScanState('DEMO SCAN LOADED ✓ · 4 OF 4 VIEWS');
     await runFullScanAnalysis(demo);
   }catch(err){
