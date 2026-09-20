@@ -1,4 +1,10 @@
-const MODEL=process.env.GEMINI_VISION_MODEL||'gemini-3.8-flash';
+const PRIMARY_MODEL=process.env.GEMINI_VISION_MODEL||'gemini-3.8-flash';
+const MODEL_CANDIDATES=[...new Set([
+  PRIMARY_MODEL,
+  'gemini-2.5-flash-lite',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash'
+].filter(Boolean))];
 
 const schema={
   type:'object',
@@ -50,6 +56,62 @@ function parseDataUrl(value,label){
   return{mimeType:m[1]==='image/jpg'?'image/jpeg':m[1],data};
 }
 
+function localFallbackProfile(faceGeometry){
+  const shape=faceGeometry?.shape||'Unable to determine from scan';
+  const proportion=faceGeometry?.proportion||'Unable to determine from scan';
+  const jawline=faceGeometry?.jaw||'Unable to determine from scan';
+  const cheekbones=faceGeometry?.cheekbones||'Unable to determine from scan';
+  const geometryAvailable=!!(faceGeometry&&Object.keys(faceGeometry).length);
+  return{
+    faceProfile:{
+      shape,
+      proportion,
+      jawline,
+      cheekbones,
+      forehead:faceGeometry?.foreheadRatio?('Measured forehead ratio '+faceGeometry.foreheadRatio):'Unable to determine from scan',
+      profileNotes:geometryAvailable?'Profile generated from the real front-scan MediaPipe geometry because Gemini quota was unavailable. Hair-specific traits remain unassigned rather than guessed.':'Gemini quota was unavailable and local face geometry was not available.',
+      confidence:geometryAvailable?'Medium':'Low'
+    },
+    hairPattern:'Unable to determine from scan',
+    primaryType:'Unable to determine from scan',
+    secondaryType:'Unable to determine from scan',
+    patternExplanation:'Gemini visual analysis was unavailable because the API quota was exhausted. Clip-E did not guess a hair pattern.',
+    coarseness:'Unable to determine from scan',
+    density:'Unable to determine from scan',
+    currentLength:'Unable to determine from scan',
+    volume:'Unable to determine from scan',
+    definition:'Unable to determine from scan',
+    growthPattern:'Unable to determine from scan',
+    crownBehavior:'Unable to determine from scan',
+    frizzFlyaways:'Unable to determine from scan',
+    symmetry:faceGeometry?.ratio?'Front facial geometry measured locally; hair symmetry was not inferred.':'Unable to determine from scan',
+    currentCutShape:'Unable to determine from scan',
+    necklineCondition:'Unable to determine from scan',
+    sideGrowth:'Unable to determine from scan',
+    backGrowth:'Unable to determine from scan',
+    regionalPatterns:[
+      {region:'Front',pattern:'Local geometry available',observation:geometryAvailable?'Face/head geometry was measured from the real front scan.':'Local geometry unavailable.'},
+      {region:'Left',pattern:'Captured',observation:'Image captured and preserved; visual hair interpretation deferred while Gemini quota is unavailable.'},
+      {region:'Right',pattern:'Captured',observation:'Image captured and preserved; visual hair interpretation deferred while Gemini quota is unavailable.'},
+      {region:'Back',pattern:'Captured',observation:'Image captured and preserved; visual hair interpretation deferred while Gemini quota is unavailable.'}
+    ],
+    observableLimits:[
+      'Gemini visual quota unavailable during this run',
+      'Hair pattern, density, coarseness, and growth behavior were not guessed'
+    ],
+    styleSignals:{
+      lengthCategory:'Unable to determine',
+      maintenanceTolerance:'Unknown',
+      compatiblePatterns:[],
+      usefulAssistanceAreas:[]
+    },
+    confidence:{
+      overall:geometryAvailable?'Medium':'Low',
+      notes:'Fallback uses real scan geometry only. Unknown hair traits remain explicitly unknown.'
+    }
+  };
+}
+
 export default async function handler(req,res){
   if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
   if(!process.env.GEMINI_API_KEY)return res.status(503).json({error:'GEMINI_API_KEY is not configured'});
@@ -77,31 +139,56 @@ Use that geometry as quantitative support for faceProfile. Do not randomly assig
 
 The result will drive a deterministic hairstyle-matching system across Clip-E's existing 100 styles, so make styleSignals useful but conservative and evidence-based.`});
 
-    let g=null,out=null,lastMessage='';
-    for(let attempt=0;attempt<3;attempt++){
-      g=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY)}`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          contents:[{role:'user',parts}],
-          generationConfig:{
-            responseMimeType:'application/json',
-            responseSchema:schema
-          }
-        })
-      });
-      out=await g.json().catch(()=>({}));
-      if(g.ok)break;
-      lastMessage=out?.error?.message||`Gemini profile analysis failed with status ${g.status}`;
-      if(![429,500,502,503,504].includes(g.status)||attempt===2)break;
-      await new Promise(resolve=>setTimeout(resolve,700*(attempt+1)));
+    let g=null,out=null,lastMessage='',usedModel='';
+    const failures=[];
+    outer:
+    for(const model of MODEL_CANDIDATES){
+      for(let attempt=0;attempt<2;attempt++){
+        g=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(process.env.GEMINI_API_KEY)}`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            contents:[{role:'user',parts}],
+            generationConfig:{
+              responseMimeType:'application/json',
+              responseSchema:schema
+            }
+          })
+        });
+        out=await g.json().catch(()=>({}));
+        if(g.ok){usedModel=model;break outer}
+        lastMessage=out?.error?.message||`Gemini profile analysis failed with status ${g.status}`;
+        failures.push({model,status:g.status,message:lastMessage});
+        // Invalid/unsupported model: move to the next candidate immediately.
+        if([400,404].includes(g.status))break;
+        // Quota/server errors: one short retry, then try another model.
+        if(![429,500,502,503,504].includes(g.status))break;
+        if(attempt===0)await new Promise(resolve=>setTimeout(resolve,450));
+      }
     }
-    if(!g?.ok)throw new Error(lastMessage||'Gemini profile analysis request failed');
+
+    if(!g?.ok){
+      const quotaLike=failures.some(f=>f.status===429||/quota|free_tier|rate limit/i.test(f.message||''));
+      if(quotaLike){
+        const fallback=localFallbackProfile(faceGeometry);
+        return res.status(200).json({
+          analysis:fallback,
+          model:'local-mediapipe-fallback',
+          fallback:true,
+          fallbackReason:'Gemini quota unavailable',
+          viewsUsed:4,
+          viewLabels:['Front','Left','Right','Back'],
+          geminiFailures:failures.map(f=>({model:f.model,status:f.status}))
+        });
+      }
+      throw new Error(lastMessage||'Gemini profile analysis request failed');
+    }
+
     const raw=out?.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('').trim();
     if(!raw)throw new Error('Gemini returned no hair analysis');
     let parsed;
     try{parsed=JSON.parse(raw)}catch{throw new Error('Gemini returned invalid structured hair-analysis JSON')}
-    return res.status(200).json({analysis:parsed,model:MODEL,viewsUsed:4,viewLabels:['Front','Left','Right','Back']});
+    return res.status(200).json({analysis:parsed,model:usedModel,viewsUsed:4,viewLabels:['Front','Left','Right','Back']});
   }catch(e){
     console.error('Clip-E hair analysis error',e);
     const message=e?.message||'Profile analysis failed';
