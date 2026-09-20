@@ -2,11 +2,13 @@ import React,{useEffect,useRef,useState} from 'react';
 import {Camera,RefreshCw,Wifi,WifiOff} from 'lucide-react';
 
 export default function PhoneCamera(){
-  const videoRef=useRef(null),canvasRef=useRef(null),timerRef=useRef(null),streamRef=useRef(null),pcRef=useRef(null),answerTimerRef=useRef(null);
+  const videoRef=useRef(null),canvasRef=useRef(null),timerRef=useRef(null),streamRef=useRef(null),pcRef=useRef(null),answerTimerRef=useRef(null),frameCallbackRef=useRef(null),captureFpsRef=useRef({t:performance.now(),n:0});
   const [running,setRunning]=useState(false);
   const [status,setStatus]=useState('Ready');
   const [seq,setSeq]=useState(0);
   const [fps,setFps]=useState(2);
+  const [captureFps,setCaptureFps]=useState(0);
+  const [cameraSettings,setCameraSettings]=useState({width:0,height:0,frameRate:0});
   const [token,setToken]=useState('');
   const [expiresAt,setExpiresAt]=useState(0);
   const params=new URLSearchParams(location.search);
@@ -31,7 +33,17 @@ export default function PhoneCamera(){
 
     const pc=new RTCPeerConnection(rtcConfig);
     pcRef.current=pc;
-    stream.getTracks().forEach(track=>pc.addTrack(track,stream));
+    stream.getTracks().forEach(track=>{
+      const sender=pc.addTrack(track,stream);
+      if(track.kind==='video'){
+        try{
+          const p=sender.getParameters();p.encodings=p.encodings?.length?p.encodings:[{}];
+          p.encodings[0]={...p.encodings[0],maxFramerate:30,maxBitrate:2500000};
+          p.degradationPreference='maintain-framerate';
+          sender.setParameters(p).catch(()=>{});
+        }catch{}
+      }
+    });
     pc.onconnectionstatechange=()=>{
       if(pc.connectionState==='connected')setStatus('WebRTC live · rear-head stream connected');
       if(pc.connectionState==='failed')setStatus('WebRTC unavailable · snapshot fallback active');
@@ -72,11 +84,35 @@ export default function PhoneCamera(){
     try{
       stop();
       setStatus('Requesting rear camera…');
-      const s=await navigator.mediaDevices.getUserMedia({
-        video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},
-        audio:false
-      });
+      let s;
+      try{
+        s=await navigator.mediaDevices.getUserMedia({
+          video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30,min:20,max:30}},
+          audio:false
+        });
+      }catch(e){
+        console.warn('[Clip-E phone] 30 FPS minimum unavailable; retrying flexible request',e);
+        s=await navigator.mediaDevices.getUserMedia({
+          video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30,max:30}},
+          audio:false
+        });
+      }
       streamRef.current=s;
+      const track=s.getVideoTracks()[0];
+      try{
+        const caps=track?.getCapabilities?.()||{},settings=track?.getSettings?.()||{};
+        console.info('[Clip-E phone] settings',settings);
+        console.info('[Clip-E phone] capabilities',caps);
+        const maxFps=typeof caps.frameRate?.max==='number'?caps.frameRate.max:30;
+        const target=Math.min(30,maxFps||30);
+        if(track?.applyConstraints&&target){
+          const frameRate={ideal:target,max:target};if(target>=20)frameRate.min=20;
+          await track.applyConstraints({frameRate}).catch(()=>{});
+        }
+        const tuned=track?.getSettings?.()||settings;
+        setCameraSettings({width:tuned.width||0,height:tuned.height||0,frameRate:tuned.frameRate||0});
+        console.info('[Clip-E phone] tuned settings',tuned);
+      }catch(e){console.warn('[Clip-E phone] track tuning failed',e)}
       if(videoRef.current){videoRef.current.srcObject=s;await videoRef.current.play();}
       await getToken();
       await startWebRTC(s).catch(()=>setStatus('Snapshot fallback active'));
@@ -87,6 +123,8 @@ export default function PhoneCamera(){
   function stop(){
     if(timerRef.current)clearInterval(timerRef.current);
     timerRef.current=null;
+    if(frameCallbackRef.current&&videoRef.current?.cancelVideoFrameCallback)videoRef.current.cancelVideoFrameCallback(frameCallbackRef.current);
+    frameCallbackRef.current=null;
     streamRef.current?.getTracks().forEach(t=>t.stop());
     streamRef.current=null;
     pcRef.current?.close();pcRef.current=null;
@@ -120,6 +158,19 @@ export default function PhoneCamera(){
   }
 
   useEffect(()=>{
+    if(!running||!videoRef.current)return;
+    const v=videoRef.current;let stopped=false;
+    const onFrame=()=>{
+      if(stopped)return;
+      const now=performance.now(),m=captureFpsRef.current;m.n++;
+      if(now-m.t>=900){setCaptureFps(Math.round(m.n*1000/(now-m.t)));m.n=0;m.t=now}
+      if(v.requestVideoFrameCallback)frameCallbackRef.current=v.requestVideoFrameCallback(onFrame);
+    };
+    if(v.requestVideoFrameCallback)frameCallbackRef.current=v.requestVideoFrameCallback(onFrame);
+    return()=>{stopped=true;if(frameCallbackRef.current&&v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(frameCallbackRef.current)}
+  },[running]);
+
+  useEffect(()=>{
     if(!running)return;
     uploadFrame().catch(e=>setStatus(e.message));
     timerRef.current=setInterval(()=>uploadFrame().catch(e=>setStatus(e.message)),Math.max(200,1000/fps));
@@ -143,7 +194,9 @@ export default function PhoneCamera(){
       </section>
       <section className="phoneCamControls">
         <div><span>SESSION</span><b>{session}</b></div>
-        <div><span>UPLOAD RATE</span><b>{fps} FPS</b></div>
+        <div><span>PHONE CAPTURE</span><b>{captureFps||'—'} FPS</b></div>
+        <div><span>CAMERA MODE</span><b>{cameraSettings.width||'—'}×{cameraSettings.height||'—'} · {cameraSettings.frameRate?Math.round(cameraSettings.frameRate)+' FPS':'—'}</b></div>
+        <div><span>SNAPSHOT UPLOAD</span><b>{fps} FPS</b></div>
         <input type="range" min="1" max="5" value={fps} onChange={e=>setFps(Number(e.target.value))}/>
         <p>{status}</p>
         {!running?<button className="primary big" onClick={start}><Camera size={18}/> Start rear camera</button>:<button className="ghost big" onClick={stop}><RefreshCw size={18}/> Stop camera</button>}
