@@ -98,7 +98,50 @@ async function refreshHairAnalysis(){const images=(scanShots?.filter(Boolean).le
 useEffect(()=>{if(!((step===5&&clipEPhase==='assist')||step===8)||stream)return;let cancelled=false;(async()=>{await startCamera();if(cancelled){setStream(current=>{current?.getTracks().forEach(t=>t.stop());return null})}})();return()=>{cancelled=true}},[step]);
 
 async function loadCameras(){try{const warm=await navigator.mediaDevices.getUserMedia({video:true,audio:false});warm.getTracks().forEach(t=>t.stop());const ds=await navigator.mediaDevices.enumerateDevices();const cams=ds.filter(d=>d.kind==='videoinput');setCameras(cams);const frontId=selectedCamera||cams[0]?.deviceId||'';if(!selectedCamera&&frontId)setSelectedCamera(frontId);if(!selectedRearCamera){const rearDefault=cams.find(cam=>cam.deviceId!==frontId)?.deviceId||cams[0]?.deviceId||'';if(rearDefault)setSelectedRearCamera(rearDefault)}return cams}catch(e){setScanState('Camera permission denied — allow camera access in your browser');return[]}}
-async function startCamera(deviceId=selectedCamera){try{stream?.getTracks().forEach(t=>t.stop());const cams=cameras.length?cameras:await loadCameras();const id=deviceId||cams[0]?.deviceId;const s=await navigator.mediaDevices.getUserMedia({video:id?{deviceId:{exact:id},width:{ideal:1280},height:{ideal:720}}:{width:{ideal:1280},height:{ideal:720}},audio:false});setSelectedCamera(s.getVideoTracks()[0]?.getSettings()?.deviceId||id||'');setStream(s);setScanState('Center your face');return true}catch(e){setScanState('Could not open that camera — choose another camera or upload a photo');return false}}
+async function tuneCameraTrack(track,label='camera'){
+  if(!track)return;
+  try{
+    const settings=track.getSettings?.()||{};
+    const caps=track.getCapabilities?.()||{};
+    console.info('[Clip-E '+label+'] settings',settings);
+    console.info('[Clip-E '+label+'] capabilities',caps);
+    const maxFps=typeof caps.frameRate?.max==='number'?caps.frameRate.max:30;
+    const minFps=typeof caps.frameRate?.min==='number'?caps.frameRate.min:0;
+    const target=Math.min(30,Math.max(minFps||0,maxFps||30));
+    if(track.applyConstraints&&target){
+      const frameRate={ideal:target,max:target};
+      if(target>=20)frameRate.min=20;
+      try{await track.applyConstraints({frameRate})}catch(e){console.warn('[Clip-E '+label+'] frame-rate constraint not applied',e)}
+    }
+    console.info('[Clip-E '+label+'] tuned settings',track.getSettings?.()||{});
+  }catch(e){console.warn('[Clip-E '+label+'] capability inspection failed',e)}
+}
+async function openLocalCamera(deviceId=''){
+  const preferred={width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30,min:20,max:30}};
+  if(deviceId)preferred.deviceId={exact:deviceId};
+  try{return await navigator.mediaDevices.getUserMedia({video:preferred,audio:false})}
+  catch(e){
+    console.warn('[Clip-E camera] 30 FPS request unavailable; retrying without hard minimum',e);
+    const fallback={width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30,max:30}};
+    if(deviceId)fallback.deviceId={exact:deviceId};
+    return await navigator.mediaDevices.getUserMedia({video:fallback,audio:false});
+  }
+}
+async function startCamera(deviceId=selectedCamera){
+  try{
+    stream?.getTracks().forEach(t=>t.stop());
+    const cams=cameras.length?cameras:await loadCameras();
+    const id=deviceId||cams[0]?.deviceId||'';
+    const s=await openLocalCamera(id);
+    const track=s.getVideoTracks()[0];
+    await tuneCameraTrack(track,'computer camera');
+    setSelectedCamera(track?.getSettings?.()?.deviceId||id||'');
+    setStream(s);setScanState('Center your face');return true
+  }catch(e){
+    console.error('[Clip-E computer camera] failed',e);
+    setScanState('Could not open that camera — choose another camera or upload a photo');return false
+  }
+}
 async function startCalibrationCamera(deviceId=selectedCamera){setCalibrationCameraState('initializing');const ok=await startCamera(deviceId);setCalibrationCameraState(ok?'live':'error');return ok}
 async function startRearCalibrationCamera(deviceId=selectedRearCamera){
   setRearCalibrationCameraState('initializing');
@@ -106,11 +149,14 @@ async function startRearCalibrationCamera(deviceId=selectedRearCamera){
     rearStream?.getTracks().forEach(t=>t.stop());
     const cams=cameras.length?cameras:await loadCameras();
     const frontId=selectedCamera||cams[0]?.deviceId||'';
-    const id=deviceId||selectedRearCamera||cams.find(cam=>cam.deviceId!==frontId)?.deviceId||cams[0]?.deviceId;
-    const s=await navigator.mediaDevices.getUserMedia({video:id?{deviceId:{exact:id},width:{ideal:1280},height:{ideal:720}}:{width:{ideal:1280},height:{ideal:720}},audio:false});
-    const actual=s.getVideoTracks()[0]?.getSettings()?.deviceId||id||'';
+    const id=deviceId||selectedRearCamera||cams.find(cam=>cam.deviceId!==frontId)?.deviceId||cams[0]?.deviceId||'';
+    const s=await openLocalCamera(id);
+    const track=s.getVideoTracks()[0];
+    await tuneCameraTrack(track,'rear camera');
+    const actual=track?.getSettings?.()?.deviceId||id||'';
     setSelectedRearCamera(actual);setRearStream(s);setRearCalibrationCameraState('live');return true
   }catch(e){
+    console.error('[Clip-E rear camera] failed',e);
     setRearCalibrationCameraState('error');return false
   }
 }
