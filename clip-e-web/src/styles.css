@@ -2087,3 +2087,72 @@ main{
   align-self:stretch!important;
   transform:none!important;
 }
+
+/* Calibration camera coverage — full-width layout */
+.phaseCalibrate .setupCamera.calibrationCoverage{
+  grid-column:1 / -1!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+}
+.calibrationCoverage .calibrationDualGrid{
+  width:100%!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:18px!important;
+}
+.calibrationCoverage .calibrationCameraCard{
+  width:100%!important;
+  min-width:0!important;
+  padding:16px!important;
+}
+.calibrationCoverage .calibrationFeed{
+  min-height:320px!important;
+  aspect-ratio:16/9!important;
+}
+.calibrationCoverage .calibrationQrState{
+  width:100%!important;
+  grid-template-columns:minmax(190px,240px) minmax(0,1fr)!important;
+  gap:28px!important;
+  padding:28px!important;
+}
+.calibrationCoverage .calibrationQrState .phoneQrCard{
+  width:100%!important;
+  max-width:230px!important;
+  justify-self:center!important;
+}
+.calibrationCoverage .calibrationQrState .phoneQrCard canvas{
+  width:100%!important;
+  height:auto!important;
+}
+.calibrationCoverage .calibrationQrState>div:last-child{
+  max-width:300px!important;
+}
+.calibrationCoverage .coverageReadyBar{
+  width:100%!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+.calibrationCoverage .coverageReadyBar>div{
+  min-height:58px!important;
+  justify-content:center!important;
+}
+@media(max-width:900px){
+  .calibrationCoverage .calibrationDualGrid{
+    grid-template-columns:1fr!important;
+  }
+  .calibrationCoverage .calibrationFeed{
+    min-height:300px!important;
+  }
+  .calibrationCoverage .coverageReadyBar{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:560px){
+  .calibrationCoverage .calibrationQrState{
+    grid-template-columns:1fr!important;
+    justify-items:center!important;
+    text-align:center!important;
+  }
+  .calibrationCoverage .coverageReadyBar{
+    grid-template-columns:1fr!important;
+  }
+}
