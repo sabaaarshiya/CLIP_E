@@ -21,7 +21,8 @@ export default function PhoneLiveView({
   sideLength=6,
   fadeHeight='Mid',
   showMap=true,
-  compact=false
+  compact=false,
+  rearPlan=[]
 }){
   const videoRef=useRef(null);
   const pcRef=useRef(null);
@@ -82,8 +83,8 @@ export default function PhoneLiveView({
 
   return <div className={'phoneLiveView '+(compact?'compact ':'')+(usingWebRTC?'webrtc':'fallback')}>
     <video ref={videoRef} autoPlay playsInline muted className="phoneRtcProbe"/>
-    {showMap&&usingWebRTC&&liveStream?<LiveHeadAR stream={liveStream} topLength={topLength} sideLength={sideLength} fadeHeight={fadeHeight} rear className="rearHeadAR"/>:null}
-    {showMap&&!usingWebRTC&&fallbackSrc?<LiveHeadAR src={fallbackSrc} topLength={topLength} sideLength={sideLength} fadeHeight={fadeHeight} rear className="rearHeadAR"/>:null}
+    {showMap&&usingWebRTC&&liveStream?<LiveHeadAR stream={liveStream} topLength={topLength} sideLength={sideLength} fadeHeight={fadeHeight} rear rearPlan={rearPlan} className="rearHeadAR"/>:null}
+    {showMap&&!usingWebRTC&&fallbackSrc?<LiveHeadAR src={fallbackSrc} topLength={topLength} sideLength={sideLength} fadeHeight={fadeHeight} rear rearPlan={rearPlan} className="rearHeadAR"/>:null}
     {!showMap&&usingWebRTC&&liveStream?<video autoPlay playsInline muted ref={el=>{if(el&&el.srcObject!==liveStream){el.srcObject=liveStream;el.play().catch(()=>{})}}} className="visible"/>:null}
     {!showMap&&!usingWebRTC&&fallbackSrc&&<img src={fallbackSrc} alt="Rear phone camera fallback"/>}
     {!usingWebRTC&&!fallbackSrc&&<div className="phoneLiveEmpty"><Camera/><b>Waiting for rear camera</b></div>}
