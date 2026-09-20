@@ -1265,7 +1265,7 @@ main{
 .armLandingVisual>img{
   position:absolute!important;
   right:0!important;
-  bottom:0!important;
+  bottom:-6%!important;
   top:auto!important;
   left:auto!important;
   width:134%!important;
