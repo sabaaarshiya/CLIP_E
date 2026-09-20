@@ -2395,11 +2395,20 @@ main{
   width:100%!important;
   height:100%!important;
   min-height:520px!important;
-  object-fit:contain!important;
-  object-position:center!important;
+  object-fit:cover!important;
+  object-position:50% 52%!important;
   background:#081f30;
   display:block;
+  transform:scale(1.5);
+  transform-origin:center;
+}
+.armLandingVisual{
+  border-radius:18px!important;
+  overflow:hidden!important;
 }
 @media(max-width:1000px){
-  .discoverHeroRepoImage{min-height:420px!important}
+  .discoverHeroRepoImage{
+    min-height:420px!important;
+    transform:scale(1.38);
+  }
 }
