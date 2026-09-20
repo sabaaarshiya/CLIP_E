@@ -2209,3 +2209,27 @@ main{
 
 .arEdgeLabel{fill:#ffd3cc;font-size:18px}
 .rearHeadAR .arLabel{font-size:18px}.rearHeadAR .arLabelTop{font-size:20px}.rearHeadAR .arEdgeLabel{font-size:16px}
+
+/* Rear camera + work map now use the same tracked AR engine as the front camera */
+.rearFeedMap>.liveHeadAR,
+.rearWorkMapAR{
+  width:100%!important;
+  height:100%!important;
+  min-height:470px!important;
+  border:0!important;
+  border-radius:0!important;
+}
+.rearWorkMapAR>video,
+.rearWorkMapAR>img{
+  object-fit:cover!important;
+  object-position:center!important;
+}
+.calibrationFeed>.rearHeadAR{
+  width:100%!important;
+  height:100%!important;
+  min-height:320px!important;
+}
+@media(max-width:620px){
+  .rearFeedMap>.liveHeadAR,
+  .rearWorkMapAR{min-height:360px!important}
+}
