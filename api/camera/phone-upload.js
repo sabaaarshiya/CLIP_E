@@ -29,7 +29,7 @@ export default async function handler(req,res){
     if(!jpeg.length)return res.status(400).json({error:'Empty frame'});
 
     const started=Date.now();
-    const blob=await put(`trimsync/${device}/latest.jpg`,jpeg,{
+    const blob=await put(`trimsync/${device}/${sessionId}/latest.jpg`,jpeg,{
       access:'private',addRandomSuffix:false,allowOverwrite:true,contentType:'image/jpeg'
     });
     const uploadMs=Date.now()-started;
