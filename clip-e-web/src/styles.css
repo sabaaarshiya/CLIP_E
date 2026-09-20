@@ -1272,7 +1272,7 @@ main{
   max-height:none!important;
   object-fit:cover!important;
   object-position:center center!important;
-  transform:translate(-50%,-50%)!important;
+  transform:translate(-47%,-50%)!important;
   display:block!important;
   border-radius:inherit!important;
   margin:0!important;
@@ -1297,7 +1297,7 @@ main{
     height:114%!important;
     top:50%!important;
     left:50%!important;
-    transform:translate(-50%,-50%)!important;
+    transform:translate(-48%,-50%)!important;
     object-position:center center!important;
   }
 }
