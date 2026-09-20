@@ -2047,3 +2047,31 @@ main{
   .rearCurrentTarget svg{transform:rotate(90deg)}
   .rearCurrentTarget>div:last-child{text-align:left}
 }
+
+/* CLIP-E workspace stability pass — keep phase controls fixed in normal document flow */
+.clipEPhaseNav{
+  position:relative!important;
+  top:auto!important;
+  z-index:2!important;
+  box-shadow:none!important;
+}
+.clipEPhaseNav button{
+  transition:background-color .18s ease,color .18s ease,border-color .18s ease!important;
+  transform:none!important;
+}
+.clipEPhaseBody,
+.clipEUnifiedGrid{
+  transform:none!important;
+}
+.clipEUnifiedGrid{
+  animation:clipEWorkspaceFade .18s ease both!important;
+}
+@keyframes clipEWorkspaceFade{
+  from{opacity:.72}
+  to{opacity:1}
+}
+.clipEWorkspace .dashPanel,
+.clipEWorkspace .cameraRoleCard,
+.clipEWorkspace .rearMappingSection{
+  transform:none!important;
+}
