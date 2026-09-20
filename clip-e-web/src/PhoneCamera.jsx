@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {Camera,RefreshCw,Wifi,WifiOff} from 'lucide-react';
+import {Camera,RefreshCw,Wifi,WifiOff,CheckCircle2} from 'lucide-react';
 
 export default function PhoneCamera(){
   const videoRef=useRef(null),canvasRef=useRef(null),timerRef=useRef(null),streamRef=useRef(null),pcRef=useRef(null),answerTimerRef=useRef(null),frameCallbackRef=useRef(null),captureFpsRef=useRef({t:performance.now(),n:0}),seqRef=useRef(0),tokenRef=useRef(''),expiresAtRef=useRef(0),uploadBusyRef=useRef(false);
@@ -9,6 +9,8 @@ export default function PhoneCamera(){
   const [fps,setFps]=useState(2);
   const [captureFps,setCaptureFps]=useState(0);
   const [cameraSettings,setCameraSettings]=useState({width:0,height:0,frameRate:0});
+  const [capturing,setCapturing]=useState(false);
+  const [captured,setCaptured]=useState(false);
   const [token,setToken]=useState('');
   const [expiresAt,setExpiresAt]=useState(0);
   const params=new URLSearchParams(location.search);
@@ -164,6 +166,20 @@ export default function PhoneCamera(){
     }
   }
 
+
+  async function captureBack(){
+    if(capturing)return;
+    setCapturing(true);setCaptured(false);
+    try{
+      await uploadFrame();
+      // A successful upload is the transfer: the Scan page reads this exact session/device frame.
+      setCaptured(true);
+      setStatus('BACK PHOTO SENT ✓ · return to the Scan page');
+    }catch(e){
+      setStatus(e.message||'Could not send back photo');
+    }finally{setCapturing(false)}
+  }
+
   useEffect(()=>{
     if(!running||!videoRef.current)return;
     const v=videoRef.current;let stopped=false;
@@ -206,7 +222,7 @@ export default function PhoneCamera(){
         <div><span>SNAPSHOT UPLOAD</span><b>{fps} FPS</b></div>
         <input type="range" min="1" max="5" value={fps} onChange={e=>setFps(Number(e.target.value))}/>
         <p>{status}</p>
-        {!running?<button className="primary big" onClick={start}><Camera size={18}/> Start rear camera</button>:<button className="ghost big" onClick={stop}><RefreshCw size={18}/> Stop camera</button>}
+        {!running?<button className="primary big" onClick={start}><Camera size={18}/> Start rear camera</button>:<><button className="primary big" onClick={captureBack} disabled={capturing}>{captured?<><CheckCircle2 size={18}/> Back photo sent</>:<><Camera size={18}/> {capturing?'Sending…':'Capture & send back photo'}</>}</button><button className="ghost big" onClick={stop}><RefreshCw size={18}/> Stop camera</button></>}
         <div className="phoneMountChecklist"><b>{mode==='clip-e'?'Dedicated CLIP-E rear view':'Back scan view'}</b>{mode==='clip-e'?<><span>1. Place this phone behind the user.</span><span>2. Aim at the back, nape, and rear sides.</span><span>3. Keep both ears and the full rear hairline visible.</span><span>4. Leave this phone fixed during calibration and assistance.</span></>:<><span>1. Hold or place the phone behind the user.</span><span>2. Keep the full back of the head visible.</span><span>3. Capture crown, nape, rear sides, and both ears.</span><span>4. Return to the computer when the scan registers.</span></>}</div><small>{mode==='clip-e'?'This camera session is separate from the Scan phone connection.':'This camera session is used only for the Scan back view.'}</small>
       </section>
     </main>
