@@ -26,9 +26,12 @@ export default function PhoneLiveView({
 }){
   const videoRef=useRef(null);
   const pcRef=useRef(null);
+  const frameCallbackRef=useRef(null);
+  const receiveFpsRef=useRef({t:performance.now(),n:0});
   const [state,setState]=useState('connecting');
   const [usingWebRTC,setUsingWebRTC]=useState(false);
   const [liveStream,setLiveStream]=useState(null);
+  const [receiveFps,setReceiveFps]=useState(0);
 
   useEffect(()=>{
     let cancelled=false,timer=null,lastOffer='';
@@ -81,6 +84,19 @@ export default function PhoneLiveView({
     return()=>{cancelled=true;clearInterval(timer);pcRef.current?.close();pcRef.current=null};
   },[session]);
 
+  useEffect(()=>{
+    if(!usingWebRTC||!videoRef.current)return;
+    const v=videoRef.current;let stopped=false;
+    const onFrame=()=>{
+      if(stopped)return;
+      const now=performance.now(),m=receiveFpsRef.current;m.n++;
+      if(now-m.t>=900){setReceiveFps(Math.round(m.n*1000/(now-m.t)));m.n=0;m.t=now}
+      if(v.requestVideoFrameCallback)frameCallbackRef.current=v.requestVideoFrameCallback(onFrame);
+    };
+    if(v.requestVideoFrameCallback)frameCallbackRef.current=v.requestVideoFrameCallback(onFrame);
+    return()=>{stopped=true;if(frameCallbackRef.current&&v.cancelVideoFrameCallback)v.cancelVideoFrameCallback(frameCallbackRef.current)}
+  },[usingWebRTC,liveStream]);
+
   return <div className={'phoneLiveView '+(compact?'compact ':'')+(usingWebRTC?'webrtc':'fallback')}>
     <video ref={videoRef} autoPlay playsInline muted className="phoneRtcProbe"/>
     {showMap&&usingWebRTC&&liveStream?<LiveHeadAR stream={liveStream} topLength={topLength} sideLength={sideLength} fadeHeight={fadeHeight} rear rearPlan={rearPlan} className="rearHeadAR"/>:null}
@@ -88,6 +104,6 @@ export default function PhoneLiveView({
     {!showMap&&usingWebRTC&&liveStream?<video autoPlay playsInline muted ref={el=>{if(el&&el.srcObject!==liveStream){el.srcObject=liveStream;el.play().catch(()=>{})}}} className="visible"/>:null}
     {!showMap&&!usingWebRTC&&fallbackSrc&&<img src={fallbackSrc} alt="Rear phone camera fallback"/>}
     {!usingWebRTC&&!fallbackSrc&&<div className="phoneLiveEmpty"><Camera/><b>Waiting for rear camera</b></div>}
-    <div className="phoneLiveBadge"><Wifi size={13}/><span>{usingWebRTC?'WEBRTC LIVE · AR':state==='negotiating'?'CONNECTING':'SNAPSHOT AR'}</span></div>
+    <div className="phoneLiveBadge"><Wifi size={13}/><span>{usingWebRTC?`WEBRTC LIVE · RECEIVED ${receiveFps||'—'} FPS`:state==='negotiating'?'CONNECTING':'SNAPSHOT AR'}</span></div>
   </div>
 }
